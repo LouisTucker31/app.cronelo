@@ -3,96 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<!-- Shown by the host for any address that isn't a file. It is self-contained (no links to
-     css/ or js/), because it can be shown at any depth, where relative links would break.
-     The one inline script is allowed by its hash: change the script, update the hash. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-E0AuR7+QJPaOFIPUcPuNSD1EluUsedqYv38JCTDwGqk='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="robots" content="noindex">
-<title>Page not found</title>
+<title>Page not found · Workspace</title>
+<!-- The host shows this page for any address that isn't a file, at any depth, so relative
+     links would break: it links to the app's files by full path. Each is listed twice, for
+     GitHub Pages (under /app.workspace/) and for a host at the site root (Cloudflare); the
+     browser ignores whichever isn't there. Once the app is only on Cloudflare, drop the
+     /app.workspace/ lines. -->
+<link rel="icon" href="/app.workspace/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/app.workspace/css/fonts.css">
+<link rel="stylesheet" href="/app.workspace/css/styles.css">
+<link rel="stylesheet" href="/css/fonts.css">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/app.workspace/js/early.js"></script>
+<script src="/js/early.js"></script>
 <style>
-:root {
-  --bg: #f6f7f9;
-  --surface: #ffffff;
-  --edge: #dde2e8;
-  --text: #121417;
-  --muted: #5a6169;
-  --accent: #418dab;
-  --accent-text: #ffffff;
-  --focus-glow: rgba(71, 144, 173, .25);
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #121417;
-    --surface: #1b1f24;
-    --edge: #2a2e33;
-    --text: #e6e9ed;
-    --muted: #9aa1a9;
-    --accent-text: #ffffff;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #121417;
-  --surface: #1b1f24;
-  --edge: #2a2e33;
-  --text: #e6e9ed;
-  --muted: #9aa1a9;
-  --accent-text: #ffffff;
-  color-scheme: dark;
-}
-* { box-sizing: border-box; }
-html, body { height: 100%; }
-body {
-  margin: 0;
-  display: grid;
-  place-items: center;
-  padding: 24px 16px;
-  background: var(--bg);
-  color: var(--text);
-  font: 15px/1.5 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-main {
-  width: 100%;
-  max-width: 420px;
-  padding: 32px 28px;
-  background: var(--surface);
-  border: 1px solid var(--edge);
-  border-radius: 12px;
-  text-align: center;
-}
-svg { width: 40px; height: 40px; color: var(--accent); }
-.code {
-  margin: 12px 0 0;
-  font: 600 12px/1 ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
-  letter-spacing: .08em;
-  color: var(--muted);
-}
-h1 { margin: 8px 0 8px; font-size: 20px; line-height: 1.3; font-weight: 650; }
-p { margin: 0 0 24px; color: var(--muted); }
-a {
-  display: inline-block;
-  padding: 9px 16px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--accent-text);
-  font-weight: 600;
-  text-decoration: none;
-}
-a:hover { filter: brightness(1.08); }
-a:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--focus-glow); }
+/* The sign-in card (.gate-card), with a link styled as the app's primary button. */
+.gate-card { text-align: center; align-items: center; }
+.gate-card h1 { margin: 6px 0 0; }
+.gate-code { margin: 0; font: 600 11px 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .06em; color: var(--text-13); }
+.gate-card .gate-sub { max-width: 280px; }
+.gate-card a.primary { align-self: stretch; height: 36px; margin-top: 4px; justify-content: center; font-size: 12.5px; text-decoration: none; }
+.gate-card a.primary,
+.gate-card a.primary:hover { color: var(--on-strong); }
 </style>
 </head>
 <body>
-<main>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle><path d="M8 11h6"></path></svg>
-<p class="code">404</p>
-<h1>There’s nothing at this address</h1>
-<p>The link may be mistyped or out of date. Your projects are in Workspace.</p>
-<a href="/" data-home>Go to Workspace</a>
+<main class="gate">
+<div class="gate-card">
+<div class="gate-brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32" width="22" height="22"><path d="M6.5 9.5l4.2 13 5.3-10.2 5.3 10.2 4.2-13" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>Workspace</span></div>
+<p class="gate-code">404</p>
+<h1>Page not found</h1>
+<p class="gate-sub">There’s nothing at this address. The link may be mistyped or out of date.</p>
+<a class="primary" href="/" data-home>Go to your projects</a>
+</div>
 </main>
-<script>(function () { var saved; try { saved = localStorage.getItem('theme'); } catch (e) {} if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved); var seg = location.pathname.split('/')[1]; if (/\.github\.io$/.test(location.hostname) && seg) document.querySelector('[data-home]').setAttribute('href', '/' + seg + '/'); })();</script>
+<script src="/app.workspace/js/not-found.js"></script>
+<script src="/js/not-found.js"></script>
 </body>
 </html>

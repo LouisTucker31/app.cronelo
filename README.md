@@ -9,9 +9,10 @@ sign-up and sign-in screens: `#signup` opens "Create your account", anything els
 (`noindex` in `index.html`, and `X-Robots-Tag` in `_headers`); the website does the SEO.
 
 - `index.html`: the page
-- `404.html`: "There's nothing at this address", shown by the host for any address that isn't a
-  file. Self-contained, as it can appear at any depth; its one inline script is allowed by its
-  hash in the page's CSP, so update the hash if you change the script. Note: on Cloudflare Pages a
+- `404.html` and `js/not-found.js`: "Page not found", shown by the host for any address that isn't a
+  file. It uses the sign-in card's styles. It can appear at any depth, so it links to the app's
+  files by full path, once for GitHub Pages (`/app.workspace/…`) and once for the site root
+  (Cloudflare); drop the `/app.workspace/` lines once the app is only on Cloudflare. On Cloudflare Pages a
   top-level `404.html` turns off the automatic "serve `index.html` for every address", which
   clean project addresses (`/ex-hailstorm`) would need; add a `_redirects` rewrite then.
 - `css/`: `styles.css` (colour tokens at the top) and `fonts.css`
