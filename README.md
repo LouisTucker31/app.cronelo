@@ -11,8 +11,8 @@ sign-up and sign-in screens: `#signup` opens "Create your account", anything els
 - `index.html`: the page
 - `404.html` and `js/not-found.js`: "Page not found", shown by the host for any address that isn't a
   file. It uses the sign-in card's styles. It can appear at any depth, so it links to the app's
-  files by full path, once for GitHub Pages (`/app.workspace/…`) and once for the site root
-  (Cloudflare); drop the `/app.workspace/` lines once the app is only on Cloudflare. On Cloudflare Pages a
+  files by full path, once for GitHub Pages (`/app.cronelo/…`) and once for the site root
+  (Cloudflare); drop the `/app.cronelo/` lines once the app is only on Cloudflare. On Cloudflare Pages a
   top-level `404.html` turns off the automatic "serve `index.html` for every address", which
   clean project addresses (`/ex-hailstorm`) would need; add a `_redirects` rewrite then.
 - `css/`: `styles.css` (colour tokens at the top) and `fonts.css`
