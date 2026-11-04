@@ -9,6 +9,11 @@ sign-up and sign-in screens: `#signup` opens "Create your account", anything els
 (`noindex` in `index.html`, and `X-Robots-Tag` in `_headers`); the website does the SEO.
 
 - `index.html`: the page
+- `404.html`: "There's nothing at this address", shown by the host for any address that isn't a
+  file. Self-contained, as it can appear at any depth; its one inline script is allowed by its
+  hash in the page's CSP, so update the hash if you change the script. Note: on Cloudflare Pages a
+  top-level `404.html` turns off the automatic "serve `index.html` for every address", which
+  clean project addresses (`/ex-hailstorm`) would need; add a `_redirects` rewrite then.
 - `css/`: `styles.css` (colour tokens at the top) and `fonts.css`
 - `js/early.js`: runs in `<head>` before the page draws (theme, framing check)
 - `js/shared.js`: storage keys and helpers, HTML escaping

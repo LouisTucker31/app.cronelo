@@ -7,9 +7,9 @@ var here = sessionStore.get(STORE.here);
 if (here === 'project' && projects.length) { // with no projects yet there's only Workspace
   project().openedAt = Date.now();
   saveProjects();
-  if (location.hash !== '#project' && !/access_token|error=/.test(location.hash)) history.replaceState(null, '', '#project');
+  if (!/access_token|error=/.test(location.hash)) showProjectHash(false);
 } else {
-  if (location.hash === '#project') history.replaceState(null, '', location.pathname + location.search); // leave sign-in links to Supabase
+  if (isProjectHash(location.hash)) history.replaceState(null, '', location.pathname + location.search); // leave sign-in links to Supabase
   setTimeout(function () { goHome(true); }, 0);
 }
 // Going to an item from Workspace's Coming up, once the project has opened.

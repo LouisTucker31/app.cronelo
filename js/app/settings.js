@@ -270,6 +270,7 @@ setBody.addEventListener('input', function (e) {
     saveProjects();
     renderProjBtn();
     document.title = name;
+    showProjectHash(false);
     flashSaved();
   } else if (t.matches('[data-set-desc]')) {
     project().description = t.value;

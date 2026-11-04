@@ -266,7 +266,7 @@ function goHome(fromHistory) {
 // Back into the open project, without a reload.
 function leaveHome(fromHistory) {
   sessionStore.set(STORE.here, 'project');
-  if (!fromHistory && location.hash !== '#project') history.pushState(null, '', '#project');
+  showProjectHash(!fromHistory); // coming Back, a bare #project just gets the name
   if (!notesPop.hidden) openNotes(false); // its button is going
   app.classList.remove('on-home');
   homeEl.hidden = true;
@@ -515,7 +515,12 @@ Array.prototype.forEach.call(document.querySelectorAll('[data-go-home]'), functi
 });
 // The browser's Back and Forward step between Workspace and the project.
 window.addEventListener('popstate', function () {
-  if (location.hash === '#project') leaveHome(true);
+  var named = projectFromHash(location.hash);
+  if (named && named.id !== currentId) { // Back or Forward to a different project
+    localStore.set(STORE.current, named.id);
+    sessionStore.set(STORE.here, 'project');
+    location.reload();
+  } else if (isProjectHash(location.hash)) leaveHome(true);
   else goHome(true);
 });
 // Keep Workspace up to date with changes from other tabs.

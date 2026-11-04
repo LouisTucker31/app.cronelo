@@ -94,7 +94,10 @@ function saveProjName() {
     projects.filter(function (p) { return p.id === projMode.id; })[0].name = name;
     saveProjects();
     renderProjBtn();
-    document.title = project().name;
+    if (!onHome()) {
+      document.title = project().name;
+      showProjectHash(false);
+    }
     projMode = null;
     return renderProjPop();
   }

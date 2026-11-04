@@ -77,8 +77,13 @@ function saveProjects() {
   saveData(STORE.projects, JSON.stringify(projects));
 }
 
+// A name as it goes in ids and the address bar: "Ex HAILSTORM" → "ex-hailstorm".
+function slugOf(name) {
+  return String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'project';
+}
+
 function projectId(name) {
-  var base = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'project';
+  var base = slugOf(name);
   var id = base;
   for (var n = 2; projects.some(function (p) { return p.id === id; }); n++) id = base + '-' + n;
   return id;
@@ -93,9 +98,52 @@ function openProject(id) {
   sessionStore.remove(STORE.spot);
   sessionStore.remove(STORE.opened + ':' + id); // so its opening defaults apply
   sessionStore.set(STORE.here, 'project');
-  if (location.hash !== '#project') history.pushState(null, '', '#project');
+  var p = projects.filter(function (x) { return x.id === id; })[0];
+  if (p && location.hash !== projectHash(p)) history.pushState(null, '', projectHash(p));
   location.reload();
 }
+
+// The open project shows in the address bar as #project/<its name>, e.g. #project/ex-hailstorm,
+// so the link, a refresh, and Back and Forward all open that project. A bare #project (links
+// from before names were shown) still means "the open project".
+function projectHash(p) {
+  return '#project/' + slugOf(p.name);
+}
+
+function isProjectHash(hash) {
+  return /^#project(\/|$)/.test(hash);
+}
+
+// The project an address names: by its name, or by its id if it has been renamed since. The
+// open project wins when two share a name.
+function projectFromHash(hash) {
+  var m = /^#project\/([^/?#]+)/.exec(hash);
+  if (!m) return null;
+  var slug = decodeURIComponent(m[1]).toLowerCase();
+  var named = projects.filter(function (p) { return slugOf(p.name) === slug; });
+  return named.filter(function (p) { return p.id === currentId; })[0] || named[0] ||
+    projects.filter(function (p) { return p.id === slug; })[0] || null;
+}
+
+// Put the open project's name in the address bar (a new history step when pushing).
+function showProjectHash(push) {
+  var h = projectHash(project());
+  if (location.hash !== h) history[push ? 'pushState' : 'replaceState'](null, '', h);
+}
+
+// Opening the app at a project's address opens that project.
+(function () {
+  var named = projectFromHash(location.hash);
+  if (!named) return;
+  if (named.id !== currentId) {
+    currentId = named.id;
+    localStore.set(STORE.current, named.id);
+    localStore.set(STORE.page, 'timeline');
+    sessionStore.remove(STORE.spot);
+    sessionStore.remove(STORE.opened + ':' + named.id); // so its opening defaults apply
+  }
+  sessionStore.set(STORE.here, 'project');
+})();
 
 document.title = project().name;
 

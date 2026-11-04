@@ -225,7 +225,10 @@ window.addEventListener('storage', function (e) {
   loadTags();
   renderTagBtn();
   renderProjBtn(); // a rename in another tab
-  document.title = project().name;
+  if (!onHome()) {
+    document.title = project().name;
+    showProjectHash(false);
+  }
   if (!tagPop.hidden && !tagEditing) renderTagList();
 });
 
