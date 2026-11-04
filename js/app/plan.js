@@ -84,7 +84,7 @@ document.addEventListener('keydown', function (e) {
   var typing = e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]');
   if (typing) return; // fields keep their own undo and typing
   var key = e.key.toLowerCase();
-  // On Workspace, N starts a new project; the project's own shortcuts don't apply.
+  // On Cronelo, N starts a new project; the project's own shortcuts don't apply.
   if (onHome()) {
     if (key === 'n' && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.repeat && !actDialog.open) {
       e.preventDefault();

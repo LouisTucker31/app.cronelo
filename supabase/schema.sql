@@ -1,4 +1,4 @@
--- Workspace: the database behind the app (Supabase / Postgres).
+-- Cronelo: the database behind the app (Supabase / Postgres).
 --
 -- Each signed-in person's saved data lives in user_data, one row per item the app keeps:
 -- the project list, each project's plan, tags, templates, notes and their profile. The

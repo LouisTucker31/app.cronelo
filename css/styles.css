@@ -3778,7 +3778,7 @@ button:disabled {
   color: color-mix(in srgb, var(--c) 45%, var(--white));
 }
 
-/* Workspace: the home page above the projects. It replaces the project's bar, panel and footer */
+/* Cronelo: the home page above the projects. It replaces the project's bar, panel and footer */
 button.crumb-home {
   padding: 3px 6px;
   margin: 0 -6px;
@@ -4247,7 +4247,7 @@ button.logo:focus-visible {
   font-style: italic;
 }
 
-/* Workspace as a list: one row per project */
+/* Cronelo as a list: one row per project */
 .home-grid.as-list {
   grid-template-columns: 1fr;
   gap: 6px;

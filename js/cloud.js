@@ -270,14 +270,14 @@
   gate.className = 'gate';
   gate.setAttribute('role', 'dialog');
   gate.setAttribute('aria-modal', 'true');
-  gate.setAttribute('aria-label', 'Sign in to Workspace');
+  gate.setAttribute('aria-label', 'Sign in to Cronelo');
   document.body.appendChild(gate);
-  var LOGO = '<span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32" width="22" height="22"><path d="M6.5 9.5l4.2 13 5.3-10.2 5.3 10.2 4.2-13" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>';
+  var LOGO = '<span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32" width="22" height="22"><path d="M22.3 10.7A7.5 7.5 0 1 0 22.3 21.3" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>';
 
   function showGate(view, note) {
     document.documentElement.classList.add('gated');
     gate.hidden = false;
-    var head = '<div class="gate-brand">' + LOGO + '<span>Workspace</span></div>';
+    var head = '<div class="gate-brand">' + LOGO + '<span>Cronelo</span></div>';
     if (view === 'loading') {
       gate.innerHTML = '<div class="gate-card loading">' + head + '<p class="gate-sub">Loading your workspace…</p></div>';
       return;

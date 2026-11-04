@@ -145,7 +145,7 @@ scroller.addEventListener('lostpointercapture', function () { endDrag(); });
 scroller.addEventListener('wheel', stopGlide, { passive: true });
 
 scroller.addEventListener('scroll', function () {
-  if (app && app.classList.contains('on-home')) return; // hidden on Workspace: don't record its reset position
+  if (app && app.classList.contains('on-home')) return; // hidden on Cronelo: don't record its reset position
   extend();
   syncTodayArrow();
   syncPanelScroll();

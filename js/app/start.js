@@ -1,10 +1,10 @@
-// Start-up: where to open, closing popups with Esc, tooltips, the window.workspace hooks, and the first draw.
+// Start-up: where to open, closing popups with Esc, tooltips, the window.cronelo hooks, and the first draw.
 // Part of the app: js/cloud.js loads js/app/*.js in order once you're signed in; they share one scope.
 'use strict';
 
-// Where to start: a new visit opens Workspace; a refresh stays where you were.
+// Where to start: a new visit opens Cronelo; a refresh stays where you were.
 var here = sessionStore.get(STORE.here);
-if (here === 'project' && projects.length) { // with no projects yet there's only Workspace
+if (here === 'project' && projects.length) { // with no projects yet there's only Cronelo
   project().openedAt = Date.now();
   saveProjects();
   if (!/access_token|error=/.test(location.hash)) showProjectHash(false);
@@ -12,7 +12,7 @@ if (here === 'project' && projects.length) { // with no projects yet there's onl
   if (isProjectHash(location.hash)) history.replaceState(null, '', location.pathname + location.search); // leave sign-in links to Supabase
   setTimeout(function () { goHome(true); }, 0);
 }
-// Going to an item from Workspace's Coming up, once the project has opened.
+// Going to an item from Cronelo's Coming up, once the project has opened.
 var goToId = sessionStore.get(STORE.goTo);
 sessionStore.remove(STORE.goTo);
 if (goToId && here === 'project') setTimeout(function () { goToItem(goToId); }, 300);
@@ -162,9 +162,9 @@ document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide
 window.addEventListener('scroll', hideTip, true);
 window.addEventListener('blur', hideTip);
 
-// After changing window.WORKSPACE, call workspace.refresh() to redraw the plan and stats.
-// workspace.reset() removes everything in the open project.
-window.workspace = {
+// After changing window.CRONELO, call cronelo.refresh() to redraw the plan and stats.
+// cronelo.reset() removes everything in the open project.
+window.cronelo = {
   refresh: refresh,
   reset: function () {
     localStore.remove(planKey());

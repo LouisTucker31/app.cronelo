@@ -38,10 +38,10 @@ function accountEmail() {
 
 function cloudNote() {
   var s = document.documentElement.getAttribute('data-cloud');
-  if (!signedIn()) return 'Workspace · saved in this browser only';
+  if (!signedIn()) return 'Cronelo · saved in this browser only';
   return s === 'offline' ? 'Offline · changes are kept here and saved when you’re back online'
     : s === 'too-big' ? 'Some of your data is too large to save to your account, so it’s only kept in this browser'
-    : s === 'saving' ? 'Saving to your account…' : 'Workspace · saved to your account';
+    : s === 'saving' ? 'Saving to your account…' : 'Cronelo · saved to your account';
 }
 
 window.addEventListener('cloud-status', function () {
@@ -140,7 +140,7 @@ function saveProfileForm() {
   me = { name: name, email: me.email, color: col ? col.value : me.color };
   saveMe();
   renderProfBtn();
-  if (onHome()) renderHome(); // the greeting and avatar on Workspace too
+  if (onHome()) renderHome(); // the greeting and avatar on Cronelo too
   profView = 'main';
   renderProfile();
 }

@@ -1,11 +1,11 @@
-// Workspace: the home page with every project, coming up, notes and templates.
+// Cronelo: the home page with every project, coming up, notes and templates.
 // Part of the app: js/cloud.js loads js/app/*.js in order once you're signed in; they share one scope.
 'use strict';
 
-// Workspace: the home page above the projects. An overview as well as a library: a card
+// Cronelo: the home page above the projects. An overview as well as a library: a card
 // per project (dates, progress, status, people, what's next), what's coming up across
 // all of them, templates, tags and your notes. A new visit opens here; a refresh keeps
-// you where you were (sessionStorage); the breadcrumb's "Workspace" and the W logo come
+// you where you were (sessionStorage); the breadcrumb's "Cronelo" and the C logo come
 // back here, and the browser's Back button steps between here and a project.
 var homeEl = document.querySelector('[data-home]');
 var homeState = { sort: 'recent', view: 'grid', tag: '', q: '' };
@@ -191,8 +191,8 @@ function renderHome() {
 
   homeEl.innerHTML =
     '<header class="home-head"><div class="home-brand">' +
-    '<span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32" width="22" height="22"><path d="M6.5 9.5l4.2 13 5.3-10.2 5.3 10.2 4.2-13" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>' +
-    '<span class="home-brand-name">Workspace</span></div>' +
+    '<span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32" width="22" height="22"><path d="M22.3 10.7A7.5 7.5 0 1 0 22.3 21.3" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>' +
+    '<span class="home-brand-name">Cronelo</span></div>' +
     '<div class="home-tools"><button class="btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="notes-pop" title="Notes" data-home-notes><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"></path><path d="M15 3v5a1 1 0 0 0 1 1h5"></path></svg><span class="btn-label">Notes</span><b class="notes-badge"' + (openNotes.length ? '' : ' hidden') + ' data-notes-count>' + (openNotes.length || '') + '</b></button>' +
     '<label class="search home-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>' +
     '<input type="text" placeholder="Find a project" aria-label="Find a project" value="' + esc(homeState.q) + '" data-home-q></label>' +
@@ -244,13 +244,13 @@ function renderHome() {
 
 var WEEKDAYS_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-// Show Workspace (push it as a history step unless coming Back to it).
-var homeSpot = null; // where the timeline was when Workspace opened
+// Show Cronelo (push it as a history step unless coming Back to it).
+var homeSpot = null; // where the timeline was when Cronelo opened
 
 function goHome(fromHistory) {
   sessionStore.set(STORE.here, 'home');
   if (!fromHistory && location.hash) history.pushState(null, '', location.pathname + location.search);
-  // The chart is hidden on Workspace (and its scroll drops to the start), so remember where
+  // The chart is hidden on Cronelo (and its scroll drops to the start), so remember where
   // it was for coming back.
   if (!onHome()) homeSpot = { time: timeAt(scroller.scrollLeft), top: scroller.scrollTop };
   closePeek();
@@ -259,7 +259,7 @@ function goHome(fromHistory) {
   app.classList.add('on-home');
   homeEl.hidden = false;
   homeMenu = null;
-  document.title = 'Workspace';
+  document.title = 'Cronelo';
   renderHome();
 }
 
@@ -274,7 +274,7 @@ function leaveHome(fromHistory) {
   project().openedAt = Date.now();
   saveProjects();
   onResize(); // the chart was hidden; lay it out again
-  if (homeSpot) { // back where you were before going to Workspace
+  if (homeSpot) { // back where you were before going to Cronelo
     scroller.scrollLeft = xOf(homeSpot.time);
     scroller.scrollTop = homeSpot.top;
     extend();
@@ -285,7 +285,7 @@ function leaveHome(fromHistory) {
 
 // Opening a project from here starts fresh, like opening it anew: the Timeline at today
 // (as the Today/Now button), unless its Settings choose another page or view. Back
-// from Workspace, by contrast, returns to wherever you were.
+// from Cronelo, by contrast, returns to wherever you were.
 function openFromHome(id) {
   if (id !== currentId) return openProject(id);
   leaveHome();
@@ -300,7 +300,7 @@ function openFromHome(id) {
   saveSpot();
 }
 
-// A small dialog over Workspace: name a new project (blank or from a template), rename
+// A small dialog over Cronelo: name a new project (blank or from a template), rename
 // one, save one as a template, or delete one.
 function homeDialog(html, onSubmit) {
   actForm.innerHTML = html;
@@ -412,7 +412,7 @@ function homeAction(act, id) {
       localStore.remove(planKey(id));
       actDialog.close();
       if (id === currentId) {
-        // The open project went: make another the current one, staying on Workspace.
+        // The open project went: make another the current one, staying on Cronelo.
         localStore.set(STORE.current, projects[0].id);
         location.reload();
       } else {
@@ -513,7 +513,7 @@ homeEl.addEventListener('keydown', function (e) {
 Array.prototype.forEach.call(document.querySelectorAll('[data-go-home]'), function (b) {
   b.addEventListener('click', function () { goHome(); });
 });
-// The browser's Back and Forward step between Workspace and the project.
+// The browser's Back and Forward step between Cronelo and the project.
 window.addEventListener('popstate', function () {
   var named = projectFromHash(location.hash);
   if (named && named.id !== currentId) { // Back or Forward to a different project
@@ -523,5 +523,5 @@ window.addEventListener('popstate', function () {
   } else if (isProjectHash(location.hash)) leaveHome(true);
   else goHome(true);
 });
-// Keep Workspace up to date with changes from other tabs.
+// Keep Cronelo up to date with changes from other tabs.
 window.addEventListener('storage', function () { if (onHome() && !actDialog.open) renderHome(); });

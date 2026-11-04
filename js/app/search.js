@@ -164,7 +164,7 @@ searchRes.addEventListener('mousemove', function (e) {
 document.addEventListener('keydown', function (e) {
   if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'f' && !dialog.open) {
     e.preventDefault();
-    var box = onHome() ? homeEl.querySelector('[data-home-q]') : searchIn; // Workspace finds projects
+    var box = onHome() ? homeEl.querySelector('[data-home-q]') : searchIn; // Cronelo finds projects
     box.focus();
     box.select();
   }

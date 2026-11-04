@@ -1,6 +1,6 @@
 {
-  "name": "Workspace",
-  "short_name": "Workspace",
+  "name": "Cronelo",
+  "short_name": "Cronelo",
   "description": "Plan projects on a timeline, list, calendar and board, synced to your account.",
   "start_url": "./",
   "scope": "./",

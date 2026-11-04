@@ -214,7 +214,7 @@ function render() {
 
 // Plan rows (tasks, milestones, phase headers), dependency arrows and footer stats,
 // all drawn from js/data.js. Rows sit on a 34px grid (whole pixels keep the lines crisp) starting at ROW_Y (row centre).
-var data = window.WORKSPACE;
+var data = window.CRONELO;
 loadPlan();
 var ROW_Y = 51; // one empty row on top, where the Today button floats
 var ROW_PX = 34;

@@ -1,4 +1,4 @@
-# Workspace
+# Cronelo
 
 A project planner (timeline, list, calendar, board) that signs in and syncs through Supabase.
 Plain HTML, CSS and JavaScript with no build step.

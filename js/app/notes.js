@@ -3,8 +3,8 @@
 'use strict';
 
 // Notes: a personal checklist for the whole account, the same in every project and on
-// Workspace, apart from any plan (not in its undo or templates). It opens in a popup from
-// the Notes button in a project's top bar or on Workspace. Add with Enter, tick to
+// Cronelo, apart from any plan (not in its undo or templates). It opens in a popup from
+// the Notes button in a project's top bar or on Cronelo. Add with Enter, tick to
 // complete, click the text to edit, drag to reorder; done notes collect in a folded
 // "Done" list. The buttons show how many are still to do. Saved to your account.
 var notesBtn = document.querySelector('[data-notes-btn]');

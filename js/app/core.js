@@ -57,9 +57,9 @@ document.querySelector('[data-save-warning] button').addEventListener('click', f
 
 // Projects: each has a name, tags and its own saved plan (under STORE.plan:<id>). The
 // open project is remembered in this browser; switching reloads the page. A new account
-// has none: it starts on an empty Workspace, and NO_PROJECT stands in until there's one
+// has none: it starts on an empty Cronelo, and NO_PROJECT stands in until there's one
 // to open.
-var NO_PROJECT = { id: null, name: 'Workspace' };
+var NO_PROJECT = { id: null, name: 'Cronelo' };
 var projects = localStore.getJSON(STORE.projects);
 if (!Array.isArray(projects)) projects = [];
 var currentId = localStore.get(STORE.current);
@@ -89,7 +89,7 @@ function projectId(name) {
   return id;
 }
 
-// Opening a project goes into it (not Workspace), as a new step in the browser's history.
+// Opening a project goes into it (not Cronelo), as a new step in the browser's history.
 // It opens on the Timeline at today, or on the page and view chosen in the project's
 // Settings → Defaults.
 function openProject(id) {
