@@ -165,13 +165,20 @@ function filtering() {
   return !!(f.q || f.type || f.status || f.phase || f.person);
 }
 
+// A sort value, with times rounded to the minute: times are fractions of a day, so two
+// rows showing the same time can differ by a rounding speck, which mustn't outrank plan order.
+function sortVal(v) {
+  return typeof v === 'number' && isFinite(v) && v % 1 ? Math.round(v * 1440) / 1440 : v;
+}
+
 // The rows to show, in order. In plan order a phase stays as a heading while anything
-// in its section is shown, even if the phase itself is filtered out.
+// in its section is shown, even if the phase itself is filtered out. When sorted, rows
+// that tie keep their plan (timeline) order.
 function listRows() {
   var rows = data.rows.filter(matches);
   var col = listState.sort && colByKey(listState.sort);
   if (col) {
-    return rows.map(function (r, i) { return { r: r, v: col.val(r), i: i }; }).sort(function (a, b) {
+    return rows.map(function (r, i) { return { r: r, v: sortVal(col.val(r)), i: i }; }).sort(function (a, b) {
       return a.v < b.v ? -listState.dir : a.v > b.v ? listState.dir : a.i - b.i;
     }).map(function (x) { return x.r; });
   }
