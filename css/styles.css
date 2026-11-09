@@ -3180,14 +3180,15 @@ button:disabled {
   color: var(--text-6);
 }
 
+/* Phases are header rows: a neutral grey band, with the phase colour kept on the name */
 .list-row.l-ph td {
-  background: var(--phase-tint);
-  border-top: 1px solid var(--purple-916);
-  border-bottom-color: var(--purple-916);
+  background: var(--grey-951);
+  border-top: 1px solid var(--grey-884);
+  border-bottom-color: var(--grey-884);
 }
 
 .list-row.l-ph:hover td {
-  background: var(--phase-tint-strong);
+  background: var(--grey-916);
 }
 
 .list-row.l-ph .list-name {
@@ -3208,19 +3209,9 @@ button:disabled {
   }
 }
 
-/* Sorted, the list is flat: no indents, and phases are ordinary rows */
+/* Sorted, the list is flat: no indents; phases keep their grey band but drop the capitals */
 .list.flat .list-row.l-sub .name-cell {
   padding-left: 0;
-}
-
-.list.flat .list-row.l-ph td {
-  background: none;
-  border-top: 0;
-  border-bottom-color: var(--grey-955);
-}
-
-.list.flat .list-row.l-ph:hover td {
-  background: var(--grey-969);
 }
 
 .list.flat .list-row.l-ph .list-name {
@@ -3418,22 +3409,13 @@ button:disabled {
 }
 
 [data-theme="dark"] .list-row.l-ph td {
-  background: #1c1a2b;
-  border-top-color: #2b2742;
-  border-bottom-color: #2b2742;
+  background: #1b1f24;
+  border-top-color: #2a2e33;
+  border-bottom-color: #2a2e33;
 }
 
 [data-theme="dark"] .list-row.l-ph:hover td {
-  background: #221f36;
-}
-
-[data-theme="dark"] .list.flat .list-row.l-ph td {
-  background: none;
-  border-bottom-color: #1f2328;
-}
-
-[data-theme="dark"] .list.flat .list-row.l-ph:hover td {
-  background: #1a1e22;
+  background: #22272d;
 }
 
 [data-theme="dark"] .empty-value {
@@ -3714,20 +3696,8 @@ button:disabled {
   background: color-mix(in srgb, var(--c) 17%, var(--white));
 }
 
-.list-row.l-ph[style*="--c"] td {
-  background: color-mix(in srgb, var(--c) 11%, var(--white));
-  border-top-color: color-mix(in srgb, var(--c) 22%, var(--white));
-  border-bottom-color: color-mix(in srgb, var(--c) 22%, var(--white));
-}
-
 .list-row.l-ph[style*="--c"] .list-name {
   color: color-mix(in srgb, var(--c) 60%, var(--black));
-}
-
-.list.flat .list-row.l-ph[style*="--c"] td {
-  background: none;
-  border-top: 0;
-  border-bottom-color: var(--grey-955);
 }
 
 .cal-item.cal-bar.k-phase[style*="--c"] {
@@ -3764,12 +3734,6 @@ button:disabled {
 
 [data-theme="dark"] .task-row.ph[style*="--c"][data-id]:hover {
   background: color-mix(in srgb, var(--c) 22%, var(--surface-1));
-}
-
-[data-theme="dark"] .list-row.l-ph[style*="--c"] td {
-  background: color-mix(in srgb, var(--c) 14%, var(--surface));
-  border-top-color: color-mix(in srgb, var(--c) 24%, var(--surface));
-  border-bottom-color: color-mix(in srgb, var(--c) 24%, var(--surface));
 }
 
 [data-theme="dark"] .cal-item.cal-bar.k-phase[style*="--c"],
