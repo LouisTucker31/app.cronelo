@@ -3180,15 +3180,26 @@ button:disabled {
   color: var(--text-6);
 }
 
-/* Phases are header rows: a neutral grey band, with the phase colour kept on the name */
-.list-row.l-ph td {
+/* Header rows in neutral greys: milestones the strongest, phases lighter (their colour kept
+   on the name), tasks white */
+.list-row.l-ms td {
   background: var(--grey-951);
   border-top: 1px solid var(--grey-884);
   border-bottom-color: var(--grey-884);
 }
 
-.list-row.l-ph:hover td {
+.list-row.l-ms:hover td {
   background: var(--grey-916);
+}
+
+.list-row.l-ph td {
+  background: var(--grey-969);
+  border-top: 1px solid var(--grey-931);
+  border-bottom-color: var(--grey-931);
+}
+
+.list-row.l-ph:hover td {
+  background: var(--grey-955);
 }
 
 .list-row.l-ph .list-name {
@@ -3408,14 +3419,24 @@ button:disabled {
   border-color: var(--c, #6e63b8);
 }
 
-[data-theme="dark"] .list-row.l-ph td {
+[data-theme="dark"] .list-row.l-ms td {
   background: #1b1f24;
   border-top-color: #2a2e33;
   border-bottom-color: #2a2e33;
 }
 
-[data-theme="dark"] .list-row.l-ph:hover td {
+[data-theme="dark"] .list-row.l-ms:hover td {
   background: #22272d;
+}
+
+[data-theme="dark"] .list-row.l-ph td {
+  background: #171a1e;
+  border-top-color: #22262b;
+  border-bottom-color: #22262b;
+}
+
+[data-theme="dark"] .list-row.l-ph:hover td {
+  background: #1f2328;
 }
 
 [data-theme="dark"] .empty-value {
