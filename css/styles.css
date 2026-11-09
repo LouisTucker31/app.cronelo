@@ -3447,8 +3447,14 @@ button:disabled {
   background: #1b2a40;
 }
 
+/* As faint against the dark page as the light green is against white: a slight cool green
+   tint rather than the Done badge's forest green */
 [data-theme="dark"] .list-row.done td {
-  background: color-mix(in srgb, #17301f 60%, var(--surface));
+  background: #141d19;
+}
+
+[data-theme="dark"] .list-row.done:hover td {
+  background: #19231f;
 }
 
 [data-theme="dark"] .status.done,
@@ -4840,7 +4846,8 @@ html.booting .app {
   color: var(--accent-text-4);
 }
 
-[data-theme="dark"] .profile-ok {
+[data-theme="dark"] .profile-ok,
+[data-theme="dark"] .settings-saved {
   color: #7fd0a1;
 }
 
