@@ -209,8 +209,11 @@ function renderList() {
   var span = ' colspan="' + cols.length + '"';
   var body = rows.map(function (r) {
     var cls = 'list-row ' + (r.type === 'phase' ? 'l-ph' : r.type === 'milestone' ? 'l-ms' : r.parent ? 'l-sub' : 'l-top') +
+      (r.type === 'task' && r.progress > 0 ? ' prog' : '') +
       (r.type === 'task' && r.progress >= 1 ? ' done' : '') + (r.id === freshId ? ' fresh' : '');
-    return '<tr class="' + cls + '" data-id="' + esc(r.id) + '" tabindex="0" title="Click to edit"' + (r.type === 'phase' && r.color ? ' style="' + colorVar(r).slice(2) + '"' : '') + '>' + cols.map(function (c) {
+    var style = r.type === 'phase' && r.color ? colorVar(r).slice(2) :
+      r.type === 'task' && r.progress > 0 ? '--p: ' + Math.min(1, r.progress) : '';
+    return '<tr class="' + cls + '" data-id="' + esc(r.id) + '" tabindex="0" title="Click to edit"' + (style ? ' style="' + style + '"' : '') + '>' + cols.map(function (c) {
       return '<td class="' + (c.key === 'name' ? 'name-col' : '') + (c.mono ? ' mono' : '') + (c.right ? ' r' : '') + '">' + c.cell(r) + '</td>';
     }).join('') + '</tr>';
   }).join('');

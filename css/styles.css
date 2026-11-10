@@ -28,6 +28,7 @@
   --blue-937: #e3eefb;
   --green-324: #23824f;
   --green-922: #e2f4ea;
+  --amber-922: #fcefd2;
   --grey-80: #121417;
   --grey-90: #14171a;
   --grey-124: #1b1f24;
@@ -3154,9 +3155,18 @@ button:disabled {
   cursor: pointer;
 }
 
-/* A finished task: a faint green row (its progress column says 100%) */
-.list-row.done td {
-  background: color-mix(in srgb, var(--green-922) 55%, var(--white));
+/* A task's row warms with its progress (--p, 0 to 1): from white to a faint amber at
+   half way, then on to a faint green when finished. Every percentage point shifts it a
+   little, so 10% is barely tinted and 90% is nearly green. */
+.list-row.prog {
+  --row-start: var(--white);
+  --row-mid: color-mix(in srgb, var(--amber-922) 70%, var(--white));
+  --row-end: color-mix(in srgb, var(--green-922) 55%, var(--white));
+}
+
+.list-row.prog td {
+  background: color-mix(in srgb, var(--row-end) calc(clamp(0, var(--p) * 2 - 1, 1) * 100%),
+    color-mix(in srgb, var(--row-mid) calc(clamp(0, var(--p) * 2, 1) * 100%), var(--row-start)));
 }
 
 .list-row:hover td {
@@ -3449,12 +3459,17 @@ button:disabled {
 
 /* As faint against the dark page as the light green is against white: a slight cool green
    tint rather than the Done badge's forest green */
-[data-theme="dark"] .list-row.done td {
-  background: #141d19;
+[data-theme="dark"] .list-row.prog {
+  --row-start: var(--surface);
+  --row-mid: #1f1b12;
+  --row-end: #141d19;
 }
 
-[data-theme="dark"] .list-row.done:hover td {
-  background: #19231f;
+/* Hover lifts the tint a touch rather than swapping it for the plain grey */
+[data-theme="dark"] .list-row.prog:hover td {
+  background: color-mix(in srgb, var(--white) 3%,
+    color-mix(in srgb, var(--row-end) calc(clamp(0, var(--p) * 2 - 1, 1) * 100%),
+      color-mix(in srgb, var(--row-mid) calc(clamp(0, var(--p) * 2, 1) * 100%), var(--row-start))));
 }
 
 [data-theme="dark"] .status.done,
