@@ -96,7 +96,7 @@ function saveProjName() {
     renderProjBtn();
     if (!onHome()) {
       document.title = project().name;
-      showProjectHash(false);
+      showProjectPath(false);
     }
     projMode = null;
     return renderProjPop();

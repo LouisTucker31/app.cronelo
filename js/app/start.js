@@ -7,9 +7,11 @@ var here = sessionStore.get(STORE.here);
 if (here === 'project' && projects.length) { // with no projects yet there's only Cronelo
   project().openedAt = Date.now();
   saveProjects();
-  if (!/access_token|error=/.test(location.hash)) showProjectHash(false);
+  if (!/access_token|error=/.test(location.hash)) showProjectPath(false);
 } else {
-  if (isProjectHash(location.hash)) history.replaceState(null, '', location.pathname + location.search); // leave sign-in links to Supabase
+  // An address naming no project (or a project with no projects yet) goes to Cronelo at /.
+  // Any other #hash stays: sign-in links carry their token there for Supabase.
+  if (isProjectRoute()) history.replaceState(null, '', '/' + location.search + (/^#project/.test(location.hash) ? '' : location.hash));
   setTimeout(function () { goHome(true); }, 0);
 }
 // Going to an item from Cronelo's Coming up, once the project has opened.

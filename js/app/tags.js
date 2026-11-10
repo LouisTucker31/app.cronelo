@@ -227,7 +227,7 @@ window.addEventListener('storage', function (e) {
   renderProjBtn(); // a rename in another tab
   if (!onHome()) {
     document.title = project().name;
-    showProjectHash(false);
+    showProjectPath(false);
   }
   if (!tagPop.hidden && !tagEditing) renderTagList();
 });

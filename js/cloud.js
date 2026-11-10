@@ -14,7 +14,7 @@
 
   var SUPABASE_URL = 'https://rvpczyvdulqwxopspipb.supabase.co';
   var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2cGN6eXZkdWxxd3hvcHNwaXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyODM0MDcsImV4cCI6MjEwODg1OTQwN30.GxcOvjYsAPd24BUl0-dWlFPI9l88c3UMk82NvqwEieQ';
-  var SITE = location.origin + location.pathname; // where emailed links come back to
+  var SITE = location.origin + '/'; // where emailed links come back to: Cronelo's home
   // Cloudflare Turnstile, the "are you a person" check on sign in, sign up and password reset
   // (see README.md). Empty turns it off. It's public, like the Supabase key.
   var TURNSTILE_SITE_KEY = '0x4AAAAAAF7e6bJLsZurMyrp';
@@ -77,7 +77,7 @@
       message: message.slice(0, 1000),
       source: source ? String(source).slice(0, 500) : null,
       stack: stack ? String(stack).slice(0, 4000) : null,
-      page: location.pathname.slice(0, 500),
+      page: location.pathname === '/' ? '/' : '/<project>', // not the project's name, which is the person's own
       agent: navigator.userAgent.slice(0, 400)
     });
     sendErrors();
@@ -235,7 +235,7 @@
       var link = document.createElement('link');
       link.rel = 'preload';
       link.as = 'script';
-      link.href = 'js/app/' + name + '.js';
+      link.href = '/js/app/' + name + '.js';
       document.head.appendChild(link);
     });
   }
@@ -260,7 +260,7 @@
     HELD.forEach(function (type) { window.addEventListener(type, hold, true); });
     APP_FILES.forEach(function (name, i) {
       var s = document.createElement('script');
-      s.src = 'js/app/' + name + '.js';
+      s.src = '/js/app/' + name + '.js';
       s.async = false; // run in list order
       if (i === APP_FILES.length - 1) {
         // Reveal the app (and drop the loading screen) only once it has drawn itself.
@@ -372,15 +372,15 @@
       f.fields.map(function (k) { return field[k]; }).join('') +
       (CAPTCHA_VIEWS[view] && TURNSTILE_SITE_KEY ? '<div class="gate-captcha" data-captcha></div>' : '') +
       '<p class="gate-err" role="alert" hidden></p>' +
-      (view === 'signup' ? '<p class="gate-consent">By creating an account you agree to the <a href="terms.html" target="_blank" rel="noopener">terms</a> and <a href="privacy.html" target="_blank" rel="noopener">privacy policy</a>.</p>' : '') +
+      (view === 'signup' ? '<p class="gate-consent">By creating an account you agree to the <a href="/terms.html" target="_blank" rel="noopener">terms</a> and <a href="/privacy.html" target="_blank" rel="noopener">privacy policy</a>.</p>' : '') +
       (f.button ? '<button class="primary" type="submit">' + f.button + '</button>' : '') +
       '<div class="gate-links">' +
       (view === 'signin' ? '<button type="button" data-gate="forgot">Forgot your password?</button><span>New here? <button type="button" data-gate="signup">Create an account</button></span>' : '') +
       (view === 'signup' ? '<span>Already have an account? <button type="button" data-gate="signin">Sign in</button></span>' : '') +
       (view === 'forgot' || view === 'sent' ? '<button type="button" data-gate="signin">Back to sign in</button>' : '') +
       '</div>' +
-      '<p class="gate-legal"><a href="privacy.html" target="_blank" rel="noopener">Privacy</a><span aria-hidden="true">·</span>' +
-      '<a href="terms.html" target="_blank" rel="noopener">Terms</a><span aria-hidden="true">·</span>' +
+      '<p class="gate-legal"><a href="/privacy.html" target="_blank" rel="noopener">Privacy</a><span aria-hidden="true">·</span>' +
+      '<a href="/terms.html" target="_blank" rel="noopener">Terms</a><span aria-hidden="true">·</span>' +
       '<a href="mailto:' + CONTACT + '?subject=Cronelo">Contact</a></p></form>';
     var first = gate.querySelector('input');
     if (first) first.focus();

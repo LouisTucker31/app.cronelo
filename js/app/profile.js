@@ -184,8 +184,8 @@ function renderProfile() {
     '<button type="button" class="profile-link danger" data-pf-signout' + (signedIn() ? '' : ' disabled') + '>Sign out</button></div>' +
     '<div class="profile-section profile-links"><span class="profile-label">Help</span>' +
     '<a class="profile-link" href="mailto:' + esc(contactEmail()) + '?subject=Cronelo">Contact and feedback' + EXTERNAL + '</a>' +
-    '<a class="profile-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy' + EXTERNAL + '</a>' +
-    '<a class="profile-link" href="terms.html" target="_blank" rel="noopener">Terms of use' + EXTERNAL + '</a></div>' +
+    '<a class="profile-link" href="/privacy.html" target="_blank" rel="noopener">Privacy policy' + EXTERNAL + '</a>' +
+    '<a class="profile-link" href="/terms.html" target="_blank" rel="noopener">Terms of use' + EXTERNAL + '</a></div>' +
     '<div class="profile-foot" data-pf-status>' + cloudNote() + '</div>';
   var first = profPop.querySelector('[data-pf-view="edit"]');
   if (first) first.focus();

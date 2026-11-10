@@ -9,12 +9,11 @@ sign-up and sign-in screens: `#signup` opens "Create your account", anything els
 (`noindex` in `index.html`, and `X-Robots-Tag` in `_headers`); the website does the SEO.
 
 - `index.html`: the page
-- `404.html` and `js/not-found.js`: "Page not found", shown by the host for any address that isn't a
-  file. It uses the sign-in card's styles. It can appear at any depth, so it links to the app's
-  files by full path, once for GitHub Pages (`/app.cronelo/…`) and once for the site root
-  (Cloudflare); drop the `/app.cronelo/` lines once the app is only on Cloudflare. On Cloudflare Pages a
-  top-level `404.html` turns off the automatic "serve `index.html` for every address", which
-  clean project addresses (`/ex-hailstorm`) would need; add a `_redirects` rewrite then.
+- Addresses: a project opens at `/<its name>` (e.g. `/ex-hailstorm`); Cronelo, the home screen,
+  is `/`. There's deliberately no `404.html`: without one, Cloudflare Pages serves `index.html` for
+  any address that isn't a file, and the app reads the address (`js/app/core.js`). An address
+  naming no project shows Cronelo. Because `index.html` can load at any address, it links to its
+  files by full path (`/js/…`, `/css/…`). Adding a top-level `404.html` would break project links.
 - `privacy.html`, `terms.html`: the privacy policy and terms of use, linked from the sign-in screen and the profile popup. Update the date at the top of each when they change.
 - `css/`: `styles.css` (colour tokens at the top), `fonts.css`, and `legal.css` for the two pages above
 - `js/early.js`: runs in `<head>` before the page draws (theme, framing check)
@@ -38,10 +37,9 @@ build command, output directory `/`).
 
 The app is at https://app.cronelo.co.uk, on Cloudflare Pages (project `app-cronelo`, deploys
 every push to `main`), with all the headers in `_headers` (checked 10 November 2026). The old
-addresses forward to it: `app-cronelo.pages.dev` with a Cloudflare Bulk Redirect, and the GitHub
-Pages copy (louistucker31.github.io/app.cronelo/) with the redirect at the top of `js/early.js`.
-Once nobody uses the GitHub address, turn off GitHub Pages and drop the `/app.cronelo/` lines
-from `404.html`. Account emails are sent from no-reply@cronelo.co.uk through Resend (Supabase
+address `app-cronelo.pages.dev` forwards to it with a Cloudflare Bulk Redirect. GitHub Pages is
+no longer used: the app links to its files from the site root, which GitHub Pages (under
+`/app.cronelo/`) can't serve. Account emails are sent from no-reply@cronelo.co.uk through Resend (Supabase
 custom SMTP).
 
 Cloudflare Pages serves `privacy.html` at `/privacy` (it redirects); links to either work.

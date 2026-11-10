@@ -2,16 +2,11 @@
 (function () {
   'use strict';
 
-  // The app used to live on GitHub Pages (louistucker31.github.io/app.cronelo/), which still
-  // serves a copy from this repo. Send anyone there to the same page at the real address,
-  // keeping ?query and #hash (emailed sign-in links carry their token in the hash). GitHub Pages
-  // can't redirect on the server, so this does it before anything else on the page runs.
-  if (location.hostname === 'louistucker31.github.io') {
-    document.documentElement.style.display = 'none';
-    location.replace('https://app.cronelo.co.uk' +
-      location.pathname.replace(/^\/app\.cronelo(?=\/|$)/, '') + location.search + location.hash);
-    return;
-  }
+  // Project links used to be #project/<name>; they're /<name> now (js/app/core.js). Rewrite an
+  // old link before the app reads the address. /project/<name> always works, whatever the name;
+  // the app then tidies it to /<name>.
+  var old = /^#project\/([^/?#]+)/.exec(location.hash);
+  if (old && location.pathname === '/') history.replaceState(null, '', '/project/' + old[1] + location.search);
 
   // Set the theme now so dark mode doesn't flash light on load. STORE.theme in js/shared.js
   // is the same key; that file isn't loaded yet.

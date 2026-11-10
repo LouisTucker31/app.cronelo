@@ -99,41 +99,56 @@ function openProject(id) {
   sessionStore.remove(STORE.opened + ':' + id); // so its opening defaults apply
   sessionStore.set(STORE.here, 'project');
   var p = projects.filter(function (x) { return x.id === id; })[0];
-  if (p && location.hash !== projectHash(p)) history.pushState(null, '', projectHash(p));
+  if (p && location.pathname !== projectPath(p)) history.pushState(null, '', projectPath(p));
   location.reload();
 }
 
-// The open project shows in the address bar as #project/<its name>, e.g. #project/ex-hailstorm,
-// so the link, a refresh, and Back and Forward all open that project. A bare #project (links
-// from before names were shown) still means "the open project".
-function projectHash(p) {
-  return '#project/' + slugOf(p.name);
+// The open project shows in the address bar as /<its name>, e.g. app.cronelo.co.uk/ex-hailstorm,
+// so the link, a refresh, and Back and Forward all open that project. Cronelo (the home
+// screen) is /. The host serves index.html for any address that isn't a file (Cloudflare
+// Pages does this when there's no 404.html), so these addresses load the app.
+// A name that is also a page of the app (privacy, terms) goes under /project/ instead, so
+// the address doesn't open that page. Links from before (#project/<name>) are rewritten to
+// this form by js/early.js; a bare #project still means "the open project".
+var RESERVED_PATHS = { privacy: 1, terms: 1, index: 1, assets: 1, css: 1, js: 1, supabase: 1 };
+
+function projectPath(p) {
+  var slug = slugOf(p.name);
+  return (RESERVED_PATHS[slug] ? '/project/' : '/') + slug;
 }
 
-function isProjectHash(hash) {
-  return /^#project(\/|$)/.test(hash);
-}
-
-// The project an address names: by its name, or by its id if it has been renamed since. The
-// open project wins when two share a name.
-function projectFromHash(hash) {
-  var m = /^#project\/([^/?#]+)/.exec(hash);
+// The project name in the address, or null on Cronelo.
+function routeSlug() {
+  var m = /^\/(?:project\/)?([^/]+)\/?$/.exec(location.pathname);
   if (!m) return null;
-  var slug = decodeURIComponent(m[1]).toLowerCase();
+  try { return decodeURIComponent(m[1]).toLowerCase(); } catch (e) { return null; }
+}
+
+function isProjectRoute() {
+  return !!routeSlug() || /^#project\/?$/.test(location.hash);
+}
+
+// The project the address names: by its name, or by its id if it has been renamed since. The
+// open project wins when two share a name.
+function projectFromRoute() {
+  var slug = routeSlug();
+  if (!slug) return null;
   var named = projects.filter(function (p) { return slugOf(p.name) === slug; });
   return named.filter(function (p) { return p.id === currentId; })[0] || named[0] ||
     projects.filter(function (p) { return p.id === slug; })[0] || null;
 }
 
 // Put the open project's name in the address bar (a new history step when pushing).
-function showProjectHash(push) {
-  var h = projectHash(project());
-  if (location.hash !== h) history[push ? 'pushState' : 'replaceState'](null, '', h);
+function showProjectPath(push) {
+  var h = projectPath(project());
+  if (location.pathname !== h || /^#project/.test(location.hash)) {
+    history[push ? 'pushState' : 'replaceState'](null, '', h + location.search);
+  }
 }
 
 // Opening the app at a project's address opens that project.
 (function () {
-  var named = projectFromHash(location.hash);
+  var named = projectFromRoute();
   if (!named) return;
   if (named.id !== currentId) {
     currentId = named.id;

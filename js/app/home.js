@@ -249,7 +249,7 @@ var homeSpot = null; // where the timeline was when Cronelo opened
 
 function goHome(fromHistory) {
   sessionStore.set(STORE.here, 'home');
-  if (!fromHistory && location.hash) history.pushState(null, '', location.pathname + location.search);
+  if (!fromHistory && (location.pathname !== '/' || location.hash)) history.pushState(null, '', '/' + location.search);
   // The chart is hidden on Cronelo (and its scroll drops to the start), so remember where
   // it was for coming back.
   if (!onHome()) homeSpot = { time: timeAt(scroller.scrollLeft), top: scroller.scrollTop };
@@ -266,7 +266,7 @@ function goHome(fromHistory) {
 // Back into the open project, without a reload.
 function leaveHome(fromHistory) {
   sessionStore.set(STORE.here, 'project');
-  showProjectHash(!fromHistory); // coming Back, a bare #project just gets the name
+  showProjectPath(!fromHistory); // coming Back, a bare #project just gets the name
   if (!notesPop.hidden) openNotes(false); // its button is going
   app.classList.remove('on-home');
   homeEl.hidden = true;
@@ -515,12 +515,12 @@ Array.prototype.forEach.call(document.querySelectorAll('[data-go-home]'), functi
 });
 // The browser's Back and Forward step between Cronelo and the project.
 window.addEventListener('popstate', function () {
-  var named = projectFromHash(location.hash);
+  var named = projectFromRoute();
   if (named && named.id !== currentId) { // Back or Forward to a different project
     localStore.set(STORE.current, named.id);
     sessionStore.set(STORE.here, 'project');
     location.reload();
-  } else if (isProjectHash(location.hash)) leaveHome(true);
+  } else if (isProjectRoute()) leaveHome(true);
   else goHome(true);
 });
 // Keep Cronelo up to date with changes from other tabs.
