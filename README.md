@@ -34,10 +34,20 @@ To run it locally, serve the folder over HTTP (for example `npx serve .`) and op
 Three security headers are missing while the site is on GitHub Pages, which can't send custom
 headers: `X-Content-Type-Options`, `Permissions-Policy`, and `frame-ancestors`. They're all in
 `_headers`, which Cloudflare Pages and Netlify apply automatically (both deploy from this repo, no
-build command, output directory `/`). The plan is to move to Cloudflare Pages with a custom
-domain; when that happens, update the Supabase Site URL and Redirect URLs to the new address.
+build command, output directory `/`).
 
-Until then, the rest is covered without headers:
+The app is on Cloudflare Pages at https://app-cronelo.pages.dev/ (project `app-cronelo`, deploys
+every push to `main`), with all the headers in `_headers` (checked 10 November 2026). It's still on
+GitHub Pages too, until a custom domain is added. When that happens:
+
+1. Cloudflare: the Pages project → Custom domains → add the domain.
+2. Supabase: Authentication → URL Configuration: set the Site URL to the domain and list it in
+   Redirect URLs (remove the old addresses).
+3. Turn off GitHub Pages, and drop the `/app.cronelo/` lines from `404.html`.
+
+Cloudflare Pages serves `privacy.html` at `/privacy` (it redirects); links to either work.
+
+On GitHub Pages, the rest is covered without headers:
 
 - **Content-Security-Policy** is set with a `<meta>` tag in `index.html`.
 - **Referrer-Policy** is set with `<meta name="referrer">`.
