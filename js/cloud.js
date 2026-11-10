@@ -19,6 +19,18 @@
   // (see README.md). Empty turns it off. It's public, like the Supabase key.
   var TURNSTILE_SITE_KEY = '';
   var CONTACT = 'louistucker@live.co.uk';
+  // Tells the website (cronelo.co.uk) that this browser is signed in, so it can show
+  // "Open Cronelo" instead of "Log in" and "Create free account". The site can't read the
+  // app's sign-in, which is stored for app.cronelo.co.uk only, so this cookie is shared across
+  // cronelo.co.uk instead. It holds only "1", never the sign-in itself. It's renewed on every
+  // visit while signed in and removed on sign out; on any other address it isn't set.
+  var SHARED_DOMAIN = 'cronelo.co.uk';
+  function markSignedIn(on) {
+    var host = location.hostname;
+    if (host !== SHARED_DOMAIN && host.slice(-SHARED_DOMAIN.length - 1) !== '.' + SHARED_DOMAIN) return;
+    document.cookie = 'cronelo_signed_in=' + (on ? '1; Max-Age=2592000' : '; Max-Age=0') +
+      '; Domain=' + SHARED_DOMAIN + '; Path=/; Secure; SameSite=Lax';
+  }
   var store = window.localStorage;
   var rawSet = Storage.prototype.setItem;
   var rawRemove = Storage.prototype.removeItem;
@@ -545,6 +557,7 @@
     // to use it doesn't see it.
     signOut: function () {
       return flush().then(null, function () {}).then(function () { return sb.auth.signOut(); }).then(function () {
+        markSignedIn(false);
         clearLocal();
         location.replace(SITE);
       });
@@ -558,6 +571,7 @@
         if (offline(r.error)) throw new Error('Couldn’t reach the server. Check your connection and try again.');
         if (r.error) throw new Error('Your account wasn’t deleted. Try again, or email ' + CONTACT + '.');
         user = null;
+        markSignedIn(false);
         clearLocal();
         return sb.auth.signOut({ scope: 'local' }).then(null, function () {});
       }).then(function () {
@@ -579,6 +593,7 @@
   }
 
   sb.auth.onAuthStateChange(function (event, session) {
+    markSignedIn(!!(session && session.user));
     if (event === 'PASSWORD_RECOVERY') {
       recovering = true;
       user = session.user;
