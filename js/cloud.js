@@ -335,7 +335,7 @@
   }
 
   // The sign-in screen: sign in, create an account, reset a forgotten password, or (from
-  // a reset email) choose a new one. The marketing website links to #signup or #signin. Also a short "Loading your workspace" while syncing.
+  // a reset email) choose a new one. The marketing website links to #signup or #signin. Also a short "Loading your projects" while syncing.
   var gate = document.createElement('div');
   gate.className = 'gate';
   gate.setAttribute('role', 'dialog');
@@ -349,7 +349,7 @@
     gate.hidden = false;
     var head = '<div class="gate-brand">' + LOGO + '<span>Cronelo</span></div>';
     if (view === 'loading') {
-      gate.innerHTML = '<div class="gate-card loading">' + head + '<p class="gate-sub">Loading your workspace…</p></div>';
+      gate.innerHTML = '<div class="gate-card loading">' + head + '<p class="gate-sub">Loading your projects…</p></div>';
       return;
     }
     var forms = {

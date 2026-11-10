@@ -19,6 +19,6 @@
   document.documentElement.classList.add('booting');
 
   // Never show the app inside another site's frame, where it could be overlaid to trick clicks.
-  // (The host can't send frame-ancestors on GitHub Pages; see README.md.)
+  // (A second line of defence: the frame-ancestors header in _headers does this properly.)
   if (window.top !== window.self) document.documentElement.classList.add('framed');
 })();

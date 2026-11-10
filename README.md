@@ -5,7 +5,7 @@ Plain HTML, CSS and JavaScript with no build step.
 
 This repo is the app only. A separate marketing website advertises it and links to the app's
 sign-up and sign-in screens: `#signup` opens "Create your account", anything else opens "Sign in"
-(for example `https://app.yourdomain.com/#signup`). The app is kept out of search results
+(`https://app.cronelo.co.uk/#signup`). The website is https://cronelo.co.uk, in its own repo. The app is kept out of search results
 (`noindex` in `index.html`, and `X-Robots-Tag` in `_headers`); the website does the SEO.
 
 - `index.html`: the page
@@ -30,9 +30,7 @@ To run it locally, serve the folder over HTTP (for example `npx serve .`) and op
 
 ## Hosting and security headers
 
-Three security headers are missing while the site is on GitHub Pages, which can't send custom
-headers: `X-Content-Type-Options`, `Permissions-Policy`, and `frame-ancestors`. They're all in
-`_headers`, which Cloudflare Pages and Netlify apply automatically (both deploy from this repo, no
+The security headers are all in `_headers`, which Cloudflare Pages applies automatically (no
 build command, output directory `/`).
 
 The app is at https://app.cronelo.co.uk, on Cloudflare Pages (project `app-cronelo`, deploys
@@ -44,17 +42,12 @@ custom SMTP).
 
 Cloudflare Pages serves `privacy.html` at `/privacy` (it redirects); links to either work.
 
-On GitHub Pages, the rest is covered without headers:
+The pages also set the Content-Security-Policy and Referrer-Policy with `<meta>` tags, and
+`js/early.js` hides the page inside another site's frame, as a second line of defence. Keep the
+`<meta>` policy in `index.html` and the header in `_headers` in step.
 
-- **Content-Security-Policy** is set with a `<meta>` tag in `index.html`.
-- **Referrer-Policy** is set with `<meta name="referrer">`.
-- **Framing**: `js/early.js` hides the page when it's inside another site's frame. The app needs
-  JavaScript, so a frame that blocks scripts gets nothing usable either.
-- **HTTPS and HSTS** come from GitHub Pages itself.
-
-After any hosting change, check the live headers with https://securityheaders.com.
-(Mozilla's HTTP Observatory only scans a domain's root, so it can't grade a GitHub Pages
-project site under `/workspace/`.)
+After any hosting change, check the live headers with https://securityheaders.com or Mozilla's
+HTTP Observatory.
 
 ## The Supabase library
 
