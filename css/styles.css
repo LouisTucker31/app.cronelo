@@ -5321,6 +5321,8 @@ a.profile-link {
 }
 
 .settings-field input[type=text],
+.settings-field input[type=password],
+.settings-field input[type=email],
 .settings-field input[type=time],
 .settings-field textarea,
 .settings-field select,
@@ -5615,6 +5617,8 @@ a.profile-link {
 }
 
 [data-theme="dark"] .settings-field input[type=text],
+[data-theme="dark"] .settings-field input[type=password],
+[data-theme="dark"] .settings-field input[type=email],
 [data-theme="dark"] .settings-field input[type=time],
 [data-theme="dark"] .settings-field textarea,
 [data-theme="dark"] .settings-field select,
