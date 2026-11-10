@@ -18,7 +18,7 @@
   // Cloudflare Turnstile, the "are you a person" check on sign in, sign up and password reset
   // (see README.md). Empty turns it off. It's public, like the Supabase key.
   var TURNSTILE_SITE_KEY = '0x4AAAAAAF7e6bJLsZurMyrp';
-  var CONTACT = 'louistucker@live.co.uk';
+  var CONTACT = 'hello@cronelo.co.uk';
   // Tells the website (cronelo.co.uk) that this browser is signed in, so it can show
   // "Open Cronelo" instead of "Log in" and "Create free account". The site can't read the
   // app's sign-in, which is stored for app.cronelo.co.uk only, so this cookie is shared across
