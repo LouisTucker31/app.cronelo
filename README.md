@@ -36,14 +36,13 @@ headers: `X-Content-Type-Options`, `Permissions-Policy`, and `frame-ancestors`. 
 `_headers`, which Cloudflare Pages and Netlify apply automatically (both deploy from this repo, no
 build command, output directory `/`).
 
-The app is on Cloudflare Pages at https://app-cronelo.pages.dev/ (project `app-cronelo`, deploys
-every push to `main`), with all the headers in `_headers` (checked 10 November 2026). It's still on
-GitHub Pages too, until a custom domain is added. When that happens:
-
-1. Cloudflare: the Pages project → Custom domains → add the domain.
-2. Supabase: Authentication → URL Configuration: set the Site URL to the domain and list it in
-   Redirect URLs (remove the old addresses).
-3. Turn off GitHub Pages, and drop the `/app.cronelo/` lines from `404.html`.
+The app is at https://app.cronelo.co.uk, on Cloudflare Pages (project `app-cronelo`, deploys
+every push to `main`), with all the headers in `_headers` (checked 10 November 2026). The old
+addresses forward to it: `app-cronelo.pages.dev` with a Cloudflare Bulk Redirect, and the GitHub
+Pages copy (louistucker31.github.io/app.cronelo/) with the redirect at the top of `js/early.js`.
+Once nobody uses the GitHub address, turn off GitHub Pages and drop the `/app.cronelo/` lines
+from `404.html`. Account emails are sent from no-reply@cronelo.co.uk through Resend (Supabase
+custom SMTP).
 
 Cloudflare Pages serves `privacy.html` at `/privacy` (it redirects); links to either work.
 
