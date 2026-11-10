@@ -22,6 +22,7 @@ var STORE = {
   taskPanel: 'taskPanel',
   theme: 'theme', // also read by the inline script in index.html, before this file loads
   unsent: 'workspaceUnsent', // changes not yet sent to the account (js/cloud.js)
+  owner: 'workspaceOwner', // whose account the synced items in this browser belong to (js/cloud.js)
   // This tab only (sessionStorage)
   spot: 'roadmapSpot',
   history: 'roadmapHistory',

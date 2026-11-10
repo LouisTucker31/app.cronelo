@@ -15,6 +15,10 @@
   var SUPABASE_URL = 'https://rvpczyvdulqwxopspipb.supabase.co';
   var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2cGN6eXZkdWxxd3hvcHNwaXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyODM0MDcsImV4cCI6MjEwODg1OTQwN30.GxcOvjYsAPd24BUl0-dWlFPI9l88c3UMk82NvqwEieQ';
   var SITE = location.origin + location.pathname; // where emailed links come back to
+  // Cloudflare Turnstile, the "are you a person" check on sign in, sign up and password reset
+  // (see README.md). Empty turns it off. It's public, like the Supabase key.
+  var TURNSTILE_SITE_KEY = '';
+  var CONTACT = 'louistucker@live.co.uk';
   var store = window.localStorage;
   var rawSet = Storage.prototype.setItem;
   var rawRemove = Storage.prototype.removeItem;
@@ -42,6 +46,46 @@
     }
     return fetch(url, options);
   }
+
+  // Error reports: anything that goes wrong in the page is noted in the account's app_errors table
+  // (supabase/schema.sql), so problems people hit can be seen and fixed. Only the error itself,
+  // the page and the browser are sent, never anyone's plans. At most 10 a visit, no repeats.
+  var errors = [];
+  var errorsSeen = {};
+  var errorsSent = 0;
+
+  function reportError(message, source, stack) {
+    message = String(message || 'Unknown error');
+    // Errors from other sites' scripts (browser extensions) say only "Script error." and can't be
+    // acted on; the ResizeObserver note is a harmless browser warning.
+    if (/^Script error\.?$/.test(message) || /ResizeObserver loop/.test(message)) return;
+    if (errorsSeen[message] || errorsSent + errors.length >= 10) return;
+    errorsSeen[message] = true;
+    errors.push({
+      message: message.slice(0, 1000),
+      source: source ? String(source).slice(0, 500) : null,
+      stack: stack ? String(stack).slice(0, 4000) : null,
+      page: location.pathname.slice(0, 500),
+      agent: navigator.userAgent.slice(0, 400)
+    });
+    sendErrors();
+  }
+
+  function sendErrors() {
+    if (!sb || !user || !errors.length) return;
+    var batch = errors;
+    errors = [];
+    errorsSent += batch.length;
+    sb.from('app_errors').insert(batch).then(null, function () { /* a report that can't be sent is dropped */ });
+  }
+
+  window.addEventListener('error', function (e) {
+    reportError(e.message, e.filename ? e.filename + ':' + e.lineno + ':' + e.colno : '', e.error && e.error.stack);
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e.reason;
+    reportError(r && r.message ? r.message : r, 'Unhandled promise', r && r.stack);
+  });
 
   // Watch the app's own saves: a synced item going into localStorage is queued for upload. It's
   // queued before it's stored, so the change still reaches the account if this browser can't
@@ -223,10 +267,24 @@
   // starts its profile with the name given when signing up.
   var recovering = false; // signed in from a password reset email, choosing a new password
 
+  // Remove this browser's copy of the account: on sign out, after deleting the account, and when
+  // someone else signs in here.
+  function clearLocal() {
+    syncedKeys().forEach(function (k) { rawRemove.call(store, k); });
+    [STORE.current, STORE.page, STORE.unsent, STORE.owner].forEach(function (k) { rawRemove.call(store, k); });
+    try { sessionStorage.clear(); } catch (e) { /* storage off: nothing kept there */ }
+  }
+
   function start(u) {
     user = u;
     preloadApp();
+    // Items left here by a different account (its session ended without signing out) are cleared
+    // first, so they can't show here or be uploaded into this account as if they were its own.
+    var owner = localStore.get(STORE.owner);
+    if (owner && owner !== u.id) clearLocal();
+    localStore.set(STORE.owner, u.id);
     takeUnsent(u);
+    sendErrors();
     showGate('loading');
     pull(true).then(function (result) {
       var name = u.user_metadata && u.user_metadata.name;
@@ -300,15 +358,71 @@
       '<h1>' + f.title + '</h1>' +
       (note ? '<p class="gate-note">' + esc(note) + '</p>' : '') +
       f.fields.map(function (k) { return field[k]; }).join('') +
+      (CAPTCHA_VIEWS[view] && TURNSTILE_SITE_KEY ? '<div class="gate-captcha" data-captcha></div>' : '') +
       '<p class="gate-err" role="alert" hidden></p>' +
+      (view === 'signup' ? '<p class="gate-consent">By creating an account you agree to the <a href="terms.html" target="_blank" rel="noopener">terms</a> and <a href="privacy.html" target="_blank" rel="noopener">privacy policy</a>.</p>' : '') +
       (f.button ? '<button class="primary" type="submit">' + f.button + '</button>' : '') +
       '<div class="gate-links">' +
       (view === 'signin' ? '<button type="button" data-gate="forgot">Forgot your password?</button><span>New here? <button type="button" data-gate="signup">Create an account</button></span>' : '') +
       (view === 'signup' ? '<span>Already have an account? <button type="button" data-gate="signin">Sign in</button></span>' : '') +
       (view === 'forgot' || view === 'sent' ? '<button type="button" data-gate="signin">Back to sign in</button>' : '') +
-      '</div></form>';
+      '</div>' +
+      '<p class="gate-legal"><a href="privacy.html" target="_blank" rel="noopener">Privacy</a><span aria-hidden="true">·</span>' +
+      '<a href="terms.html" target="_blank" rel="noopener">Terms</a><span aria-hidden="true">·</span>' +
+      '<a href="mailto:' + CONTACT + '?subject=Cronelo">Contact</a></p></form>';
     var first = gate.querySelector('input');
     if (first) first.focus();
+    renderCaptcha();
+  }
+
+  // The Turnstile check. Its script loads the first time a form needs it; it usually passes
+  // without asking anything, and only shows itself when it needs a click. A token is good for
+  // one try, so it's renewed after every attempt.
+  var CAPTCHA_VIEWS = { signin: true, signup: true, forgot: true };
+  var captchaToken = '';
+  var captchaWidget = null;
+  var captchaWaiting = null; // a form sent before the check finished: sent again once it has
+  var turnstileLoading = false;
+
+  function renderCaptcha() {
+    if (captchaWidget != null && window.turnstile) {
+      try { window.turnstile.remove(captchaWidget); } catch (e) { /* already gone with the old form */ }
+    }
+    captchaToken = '';
+    captchaWidget = null;
+    captchaWaiting = null;
+    var el = gate.querySelector('[data-captcha]');
+    if (!el) return;
+    if (!window.turnstile) {
+      if (!turnstileLoading) {
+        turnstileLoading = true;
+        var s = document.createElement('script');
+        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        s.onload = renderCaptcha;
+        s.onerror = function () { turnstileLoading = false; };
+        document.head.appendChild(s);
+      }
+      return;
+    }
+    captchaWidget = window.turnstile.render(el, {
+      sitekey: TURNSTILE_SITE_KEY,
+      theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light',
+      size: 'flexible',
+      appearance: 'interaction-only',
+      callback: function (token) {
+        captchaToken = token;
+        var waiting = captchaWaiting;
+        captchaWaiting = null;
+        if (waiting && gate.contains(waiting)) waiting.requestSubmit();
+      },
+      'expired-callback': function () { captchaToken = ''; },
+      'error-callback': function () { captchaToken = ''; }
+    });
+  }
+
+  function resetCaptcha() {
+    captchaToken = '';
+    if (captchaWidget != null && window.turnstile) window.turnstile.reset(captchaWidget);
   }
 
   function hideGate() {
@@ -323,6 +437,7 @@
     e.hidden = false;
     var b = gate.querySelector('button[type=submit]');
     if (b) b.disabled = false;
+    resetCaptcha();
   }
 
   // The request itself failed: no connection, or the server didn't answer. Supabase reports
@@ -349,7 +464,8 @@
     over_request_rate_limit: 'Too many attempts. Wait a few minutes, then try again.',
     signup_disabled: 'New accounts can’t be created at the moment.',
     session_not_found: 'This link has expired. Ask for a new one.',
-    session_expired: 'This link has expired. Ask for a new one.'
+    session_expired: 'This link has expired. Ask for a new one.',
+    captcha_failed: 'The security check didn’t pass. Try again.'
   };
 
   function authMessage(error, fallback) {
@@ -372,20 +488,29 @@
     if (view === 'signup' && !get('name')) return gateError('Enter your name.');
     if ((view === 'signup' || view === 'recover') && password.length < 8) return gateError('Use at least 8 characters for your password.');
     if (view === 'signin' && !password) return gateError('Enter your password.');
+    var needsCheck = CAPTCHA_VIEWS[view] && TURNSTILE_SITE_KEY;
+    if (needsCheck && !window.turnstile) return gateError('The security check didn’t load. Check your connection, then reload the page.');
+    if (needsCheck && !captchaToken) {
+      // Still checking: send the form as soon as it's done.
+      captchaWaiting = form;
+      form.querySelector('button[type=submit]').disabled = true;
+      return;
+    }
+    var check = needsCheck ? captchaToken : undefined;
     form.querySelector('button[type=submit]').disabled = true;
     if (view === 'signin') {
-      sb.auth.signInWithPassword({ email: email, password: password }).then(function (r) {
+      sb.auth.signInWithPassword({ email: email, password: password, options: { captchaToken: check } }).then(function (r) {
         if (offline(r.error)) return unreachable();
         if (r.error) return gateError(authMessage(r.error, /confirm/i.test(r.error.message) ? AUTH_MESSAGES.email_not_confirmed : AUTH_MESSAGES.invalid_credentials));
       }, unreachable);
     } else if (view === 'signup') {
-      sb.auth.signUp({ email: email, password: password, options: { emailRedirectTo: SITE, data: { name: get('name') } } }).then(function (r) {
+      sb.auth.signUp({ email: email, password: password, options: { emailRedirectTo: SITE, data: { name: get('name') }, captchaToken: check } }).then(function (r) {
         if (offline(r.error)) return unreachable();
         if (r.error) return gateError(authMessage(r.error, 'Your account wasn’t created. Check your details and try again.'));
         if (!r.data.session) showGate('sent', 'We’ve sent a link to ' + email + '. Open it to confirm your account, then sign in.');
       }, unreachable);
     } else if (view === 'forgot') {
-      sb.auth.resetPasswordForEmail(email, { redirectTo: SITE }).then(function (r) {
+      sb.auth.resetPasswordForEmail(email, { redirectTo: SITE, captchaToken: check }).then(function (r) {
         if (offline(r.error)) return unreachable();
         if (r.error) return gateError(authMessage(r.error, 'The reset link wasn’t sent. Wait a few minutes, then try again.'));
         showGate('sent', 'If there’s an account for ' + email + ', a link to reset its password is on its way.');
@@ -420,12 +545,30 @@
     // to use it doesn't see it.
     signOut: function () {
       return flush().then(null, function () {}).then(function () { return sb.auth.signOut(); }).then(function () {
-        syncedKeys().forEach(function (k) { rawRemove.call(store, k); });
-        [STORE.current, STORE.page, STORE.unsent].forEach(function (k) { rawRemove.call(store, k); });
-        sessionStorage.clear();
+        clearLocal();
         location.replace(SITE);
       });
-    }
+    },
+    // Delete the account and everything saved to it (supabase/schema.sql: delete_my_account),
+    // then this browser's copy. Nothing is sent after this starts.
+    deleteAccount: function () {
+      ready = false;
+      clearTimeout(timer);
+      return sb.rpc('delete_my_account').then(function (r) {
+        if (offline(r.error)) throw new Error('Couldn’t reach the server. Check your connection and try again.');
+        if (r.error) throw new Error('Your account wasn’t deleted. Try again, or email ' + CONTACT + '.');
+        user = null;
+        clearLocal();
+        return sb.auth.signOut({ scope: 'local' }).then(null, function () {});
+      }).then(function () {
+        location.replace(SITE + '?deleted'); // a fresh page, which says it's done
+      }, function (e) {
+        ready = true; // still here: carry on saving, starting with anything held back
+        flush();
+        throw e;
+      });
+    },
+    contact: CONTACT
   };
 
   if (!sb) {
@@ -447,6 +590,11 @@
   showGate('loading');
   sb.auth.getSession().then(function (r) {
     var session = r.data && r.data.session;
-    if (!session && !user) showGate(location.hash === '#signup' ? 'signup' : 'signin');
+    if (session || user) return;
+    if (/^\?deleted\b/.test(location.search)) {
+      history.replaceState(null, '', SITE);
+      return showGate('signin', 'Your account and everything saved to it have been deleted.');
+    }
+    showGate(location.hash === '#signup' ? 'signup' : 'signin');
   });
 })();

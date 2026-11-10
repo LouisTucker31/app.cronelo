@@ -36,6 +36,69 @@ function accountEmail() {
   return window.cloud ? window.cloud.email() : '';
 }
 
+function contactEmail() {
+  return (window.cloud && window.cloud.contact) || 'louistucker@live.co.uk';
+}
+
+var DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>';
+var EXTERNAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>';
+
+// Download everything saved to the account as one JSON file: the profile, projects with
+// their plans, tags, templates and notes. It's this browser's copy, which includes any
+// change still on its way to the account.
+function exportData() {
+  var read = function (key) { return localStore.getJSON(key); };
+  var plans = {};
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(STORE.plan + ':') === 0) plans[k.slice(STORE.plan.length + 1)] = read(k);
+    }
+  } catch (e) { /* storage off: nothing to add */ }
+  if (read(STORE.plan)) plans['(first project)'] = read(STORE.plan);
+  var out = {
+    app: 'Cronelo',
+    exported: new Date().toISOString(),
+    account: accountEmail() || null,
+    profile: read(STORE.profile),
+    projects: read(STORE.projects),
+    plans: plans,
+    tags: read(STORE.tags),
+    templates: read(STORE.templates),
+    notes: read(STORE.notes)
+  };
+  var blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'cronelo-data-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+}
+
+function deleteAccount() {
+  var input = profPop.querySelector('[data-pf-delmail]');
+  var err = profPop.querySelector('[data-pf-err]');
+  var btn = profPop.querySelector('[data-pf-delete]');
+  err.hidden = true;
+  if (input.value.trim().toLowerCase() !== accountEmail().toLowerCase()) {
+    err.textContent = 'Type the email you sign in with: ' + accountEmail();
+    err.hidden = false;
+    input.focus();
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Deleting…';
+  window.cloud.deleteAccount().then(null, function (e) {
+    err.textContent = e && e.message ? e.message : 'Your account wasn’t deleted. Try again.';
+    err.hidden = false;
+    btn.disabled = false;
+    btn.textContent = 'Delete account';
+  });
+}
+
 function cloudNote() {
   var s = document.documentElement.getAttribute('data-cloud');
   if (!signedIn()) return 'Cronelo · saved in this browser only';
@@ -58,6 +121,16 @@ function renderProfile() {
       '<p class="popup-error" hidden data-pf-err></p><p class="profile-ok" hidden data-pf-ok>Password changed.</p></div>' +
       '<div class="popup-foot"><button class="btn" type="button" data-pf-view="main">Cancel</button><button class="primary" type="button" data-pf-pwsave>Change password</button></div>';
     profPop.querySelector('[data-pf-pw]').focus();
+    return;
+  }
+  if (profView === 'delete') {
+    profPop.innerHTML = '<div class="profile-head"><button type="button" class="profile-back" aria-label="Back" data-pf-view="main">' + BACK + '</button>Delete account</div>' +
+      '<div class="profile-body">' +
+      '<p class="act-warn">This deletes your account and everything saved to it: every project, template, tag, note and your profile. It can’t be undone. You can download your data first.</p>' +
+      '<label class="settings-field"><span class="field-label">Type your email to confirm</span><input type="email" autocomplete="off" spellcheck="false" placeholder="' + esc(accountEmail()) + '" data-pf-delmail></label>' +
+      '<p class="popup-error" hidden data-pf-err></p></div>' +
+      '<div class="popup-foot"><button class="btn" type="button" data-pf-view="main">Cancel</button><button class="btn del" type="button" data-pf-delete>Delete account</button></div>';
+    profPop.querySelector('[data-pf-delmail]').focus();
     return;
   }
   if (profView === 'edit') {
@@ -106,7 +179,13 @@ function renderProfile() {
     '<div class="profile-section profile-links"><button type="button" class="profile-link" data-pf-view="keys">Keyboard shortcuts' + CHEV + '</button></div>' +
     '<div class="profile-section profile-links"><span class="profile-label">Account</span>' +
     '<button type="button" class="profile-link" data-pf-view="password"' + (signedIn() ? '' : ' disabled') + '>Change password' + CHEV + '</button>' +
+    '<button type="button" class="profile-link" data-pf-export>Download your data' + DOWNLOAD + '</button>' +
+    '<button type="button" class="profile-link danger" data-pf-view="delete"' + (signedIn() ? '' : ' disabled') + '>Delete account…</button>' +
     '<button type="button" class="profile-link danger" data-pf-signout' + (signedIn() ? '' : ' disabled') + '>Sign out</button></div>' +
+    '<div class="profile-section profile-links"><span class="profile-label">Help</span>' +
+    '<a class="profile-link" href="mailto:' + esc(contactEmail()) + '?subject=Cronelo">Contact and feedback' + EXTERNAL + '</a>' +
+    '<a class="profile-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy' + EXTERNAL + '</a>' +
+    '<a class="profile-link" href="terms.html" target="_blank" rel="noopener">Terms of use' + EXTERNAL + '</a></div>' +
     '<div class="profile-foot" data-pf-status>' + cloudNote() + '</div>';
   var first = profPop.querySelector('[data-pf-view="edit"]');
   if (first) first.focus();
@@ -159,6 +238,10 @@ profPop.addEventListener('click', function (e) {
     saveProfileForm();
   } else if (e.target.closest('[data-pf-pwsave]')) {
     savePassword();
+  } else if (e.target.closest('[data-pf-export]')) {
+    exportData();
+  } else if (e.target.closest('[data-pf-delete]')) {
+    deleteAccount();
   } else if (e.target.closest('[data-pf-signout]')) {
     e.target.closest('[data-pf-signout]').disabled = true;
     e.target.closest('[data-pf-signout]').textContent = 'Signing out…';
@@ -204,6 +287,9 @@ profPop.addEventListener('keydown', function (e) {
   } else if (e.key === 'Enter' && profView === 'password' && e.target.matches('input')) {
     e.preventDefault();
     savePassword();
+  } else if (e.key === 'Enter' && profView === 'delete' && e.target.matches('input')) {
+    e.preventDefault();
+    deleteAccount();
   } else if (e.key === 'Enter' && profView === 'edit' && e.target.matches('input[type=text]')) {
     e.preventDefault();
     saveProfileForm();

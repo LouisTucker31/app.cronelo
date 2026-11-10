@@ -15,7 +15,8 @@ sign-up and sign-in screens: `#signup` opens "Create your account", anything els
   (Cloudflare); drop the `/app.cronelo/` lines once the app is only on Cloudflare. On Cloudflare Pages a
   top-level `404.html` turns off the automatic "serve `index.html` for every address", which
   clean project addresses (`/ex-hailstorm`) would need; add a `_redirects` rewrite then.
-- `css/`: `styles.css` (colour tokens at the top) and `fonts.css`
+- `privacy.html`, `terms.html`: the privacy policy and terms of use, linked from the sign-in screen and the profile popup. Update the date at the top of each when they change.
+- `css/`: `styles.css` (colour tokens at the top), `fonts.css`, and `legal.css` for the two pages above
 - `js/early.js`: runs in `<head>` before the page draws (theme, framing check)
 - `js/shared.js`: storage keys and helpers, HTML escaping
 - `js/cloud.js`: sign-in, syncing, and loading the app
@@ -23,7 +24,8 @@ sign-up and sign-in screens: `#signup` opens "Create your account", anything els
 - `supabase/schema.sql`: the database table, its row level security and limits
 - `_headers`: HTTP security headers for hosts that support them
 - `manifest.webmanifest` and `assets/icon-*.png`, `assets/apple-touch-icon.png`: so the app can be
-  added to a phone's home screen
+  added to a phone's home screen. `icon-any-*` are rounded tiles for desktops; `icon-192`/`icon-512`
+  are full squares for phones, which crop them to their own shape (the C sits well inside the safe area)
 
 To run it locally, serve the folder over HTTP (for example `npx serve .`) and open it in a browser.
 
@@ -77,5 +79,29 @@ In the dashboard, under Authentication:
   Sign-up, confirmation and password reset emails link back to it.
 - **Email confirmation** stays on.
 
+Bot protection (Cloudflare Turnstile, free):
+
+1. In the Cloudflare dashboard, go to Turnstile, add a widget for the app's domain (add `localhost`
+   too for testing), mode **Managed**. Copy the site key and the secret key.
+2. Put the site key in `TURNSTILE_SITE_KEY` in `js/cloud.js`, and deploy.
+3. Only then, in Supabase: Authentication → Attack Protection (Bot and Abuse Protection) → turn on
+   CAPTCHA protection, provider Turnstile, and paste the secret key. Doing this before step 2 is live
+   stops everyone signing in.
+
+The Turnstile script can't be pinned with an `integrity` hash like the Supabase library, because
+Cloudflare updates it in place; the CSP allows only `https://challenges.cloudflare.com`.
+
 Signed-out visitors can't read `user_data` and see no storage buckets (checked 30 October 2026).
 Any new table needs row level security turned on before it holds data.
+
+## Error reports and deleting accounts
+
+`supabase/schema.sql` also sets up:
+
+- `app_errors`: errors people hit in the app (message, code location, page, browser; never their
+  plans). Read them in Table Editor → `app_errors`. People can add reports but not read any. At most
+  10 per visit and 200 per account a day; reports older than 90 days are cleared automatically.
+- `delete_my_account()`: what Profile → Delete account calls. It deletes the caller's own sign-in,
+  and with it all their rows.
+
+Run the file again in the SQL editor after pulling these changes, or neither will work.
