@@ -205,6 +205,18 @@ function listRows() {
   });
 }
 
+// Rows hidden by a collapsed phase are still drawn, at no height, so the columns keep the
+// widths they had with everything expanded instead of narrowing to what's left.
+function foldedRowsHtml(cols) {
+  if (listState.sort && colByKey(listState.sort)) return '';
+  return data.rows.filter(function (r) { return hiddenRow[rowIndex[r.id]] && matches(r); }).map(function (r) {
+    var cls = r.type === 'phase' ? 'l-ph' : r.type === 'milestone' ? 'l-ms' : r.parent ? 'l-sub' : 'l-top';
+    return '<tr class="list-row list-folded ' + cls + '" aria-hidden="true">' + cols.map(function (c) {
+      return '<td class="' + (c.key === 'name' ? 'name-col' : '') + (c.mono ? ' mono' : '') + (c.right ? ' r' : '') + '"><div class="fold-in">' + c.cell(r) + '</div></td>';
+    }).join('') + '</tr>';
+  }).join('');
+}
+
 function renderList() {
   var cols = shownCols();
   var flat = !!(listState.sort && colByKey(listState.sort));
@@ -237,7 +249,7 @@ function renderList() {
   } else if (!rows.length) {
     body = '<tr class="list-empty"><td' + span + '>Nothing matches these filters.&nbsp;<button type="button" data-list-clear>Clear filters</button></td></tr>';
   } else {
-    body += '<tr class="list-add" data-list-add tabindex="0"><td' + span + '><i class="list-icon add"></i>New task</td></tr>';
+    body += '<tr class="list-add" data-list-add tabindex="0"><td' + span + '><i class="list-icon add"></i>New task</td></tr>' + foldedRowsHtml(cols);
   }
   listBody.innerHTML = body;
   listEl.classList.toggle('flat', flat);
