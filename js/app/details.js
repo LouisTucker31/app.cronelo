@@ -183,6 +183,8 @@ scroller.addEventListener('click', function (e) {
     return;
   }
   var hit = document.elementFromPoint(e.clientX, e.clientY);
+  var fold = hit && hit.closest('[data-fold]');
+  if (fold) return toggleFold(fold.getAttribute('data-fold'));
   var day = hit && hit.closest('[data-group]');
   if (day) return openDay(+day.getAttribute('data-group'), parseFloat(day.getAttribute('data-first')));
   var el = hit && hit.closest('.plan [data-id]');

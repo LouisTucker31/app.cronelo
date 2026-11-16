@@ -6,6 +6,7 @@
 // it's clicked in the task list. Its start lands a little in from the left edge unless
 // it's already on screen (`always` scrolls there regardless).
 function reveal(row, i, always) {
+  unfoldTo(row.id); // a row in a collapsed phase opens its phase
   var start = PLAN_START + (row.type === 'milestone' ? row.day : row.start) * DAY;
   var view = scroller.clientWidth;
   var x = xOf(start);
@@ -45,6 +46,8 @@ taskRowsEl.addEventListener('click', function (e) {
   var pr = e.target.closest('[data-person]');
   if (pr) return goToPerson(pr.getAttribute('data-person'));
   if (e.target.closest('[data-empty-add],[data-add-row]')) return openForm();
+  var fold = e.target.closest('[data-fold]');
+  if (fold) return toggleFold(fold.getAttribute('data-fold'));
   var tr = e.target.closest('.task-row[data-id]');
   if (!tr) return;
   if (e.target.closest('[data-row-edit]')) openEdit(tr.getAttribute('data-id'));
@@ -62,7 +65,11 @@ taskRowsEl.addEventListener('keydown', function (e) {
   }
   var tr = e.target.closest('.task-row[data-id]');
   if (!tr || e.target.closest('[data-row-edit]')) return;
-  if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+  if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && tr.classList.contains('ph') && !e.altKey) {
+    e.preventDefault();
+    var fid = tr.getAttribute('data-id');
+    if (isFolded(fid) !== (e.key === 'ArrowLeft')) toggleFold(fid);
+  } else if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
     e.preventDefault();
     nudgeRow(tr.getAttribute('data-id'), e.key === 'ArrowUp' ? -1 : 1);
   } else if (e.key === 'Enter' || e.key === ' ') {
@@ -93,7 +100,7 @@ function spotAt(clientX, clientY) {
     var bk = wl.blocks.filter(function (b) { return lane >= b.first && lane < b.first + b.lanes; })[0];
     return { time: t, phase: null, person: bk ? bk.id : null, y: y };
   }
-  var row = data.rows[Math.floor((y - ROW_Y) / ROW_PX + 0.5)];
+  var row = data.rows[lineRows[Math.floor((y - ROW_Y) / ROW_PX + 0.5)]];
   var phase = !row ? phaseAt(t) : row.type === 'phase' ? row.id : phaseOf(row.parent ? data.rows[rowIndex[row.parent]] : row);
   return { time: t, phase: phase, y: y };
 }
@@ -140,14 +147,16 @@ function blockEnd(i) {
 }
 
 // Where a block led by `row` may go in `rest` (the plan without it): slot i is before rest[i].
+// Tasks and milestones can't drop into a collapsed phase, where they'd vanish from view.
 function slotsFor(row, rest) {
   var slots = [];
   for (var i = 0; i <= rest.length; i++) {
     var above = rest[i - 1];
     var below = rest[i];
+    var shut = !!above && (hiddenRow[rowIndex[above.id]] || (above.type === 'phase' && isFolded(above.id)));
     var ok = row.type === 'phase' ? !below || below.type === 'phase'
       : row.parent ? !!above && (above.id === row.parent || above.parent === row.parent)
-      : !below || !below.parent;
+      : !shut && (!below || !below.parent);
     if (ok) slots.push(i);
   }
   return slots;
@@ -206,8 +215,10 @@ taskRowsEl.addEventListener('pointermove', function (e) {
     sort.from = from;
     sort.end = end;
     sort.slots = slotsFor(data.rows[from], data.rows.slice(0, from).concat(data.rows.slice(end)));
-    var trs = taskRowsEl.querySelectorAll('.task-row[data-id]');
-    for (var k = from; k < end; k++) trs[k].classList.add('lifted');
+    for (var k = from; k < end; k++) {
+      var tk = taskRowsEl.querySelector('.task-row[data-id="' + CSS.escape(data.rows[k].id) + '"]');
+      if (tk) tk.classList.add('lifted'); // rows in a collapsed phase aren't drawn
+    }
     sortLine = document.createElement('div');
     sortLine.className = 'sort-line' + (data.rows[from].parent ? ' sub' : '');
     taskRowsEl.appendChild(sortLine);
@@ -217,12 +228,14 @@ taskRowsEl.addEventListener('pointermove', function (e) {
   var body = panel.querySelector('.task-panel-body').getBoundingClientRect();
   if (e.clientY < body.top + 30) scroller.scrollTop -= 10;
   else if (e.clientY > body.bottom - 30) scroller.scrollTop += 10;
-  // The drop spot nearest the pointer; spots after the block skip over its rows.
+  // The drop spot nearest the pointer; spots after the block skip over its rows. Rows in
+  // collapsed phases take no line.
   var top = taskRowsEl.getBoundingClientRect().top + 68;
   var len = sort.end - sort.from;
   var best = null;
   sort.slots.forEach(function (s) {
-    var y = top + (s <= sort.from ? s : s + len) * ROW_PX;
+    var at = s <= sort.from ? s : s + len;
+    var y = top + (at < data.rows.length ? lineOf[at] : lineRows.length) * ROW_PX;
     if (best === null || Math.abs(e.clientY - y) < Math.abs(e.clientY - best.y)) best = { slot: s, y: y };
   });
   sort.slot = best.slot;

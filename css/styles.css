@@ -588,6 +588,81 @@ button.name:focus-visible {
   color: var(--text-1);
 }
 
+/* Collapse all / Expand all in the task list's heading, while it's open */
+.task-panel .fold-all {
+  width: 23px;
+  height: 24px;
+  flex: none;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-14);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.task-panel.open .fold-all {
+  display: flex;
+}
+
+.app[data-page="workload"] .task-panel .fold-all {
+  display: none;
+}
+
+.task-panel .fold-all:hover {
+  background: var(--surface-6);
+  color: var(--text-1);
+}
+
+/* The chevron that collapses a phase (task list, chart label, list), pointing right once collapsed */
+.fold-btn {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin: 0 -4px 0 -6px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  opacity: .7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.fold-btn svg {
+  width: 12px;
+  height: 12px;
+  transition: transform .15s ease;
+}
+
+.fold-btn.shut svg {
+  transform: rotate(-90deg);
+}
+
+.fold-btn:hover {
+  opacity: 1;
+  background: var(--surface-6);
+}
+
+.list.flat .fold-btn {
+  display: none;
+}
+
+/* How many rows a collapsed phase hides */
+.phase-hidden,
+.list-hidden {
+  font: 500 10.5px Inter, sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-14);
+  white-space: nowrap;
+}
+
 .task-panel .caret svg {
   transition: transform .18s ease;
 }

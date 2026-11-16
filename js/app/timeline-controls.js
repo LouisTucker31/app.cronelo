@@ -188,11 +188,17 @@ function renderTaskList() {
   // (see the task form below).
   var more = '<button type="button" class="more" data-row-edit tabindex="-1" aria-label="Edit" title="Edit">' +
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>';
-  taskRowsEl.innerHTML = data.rows.map(function (row) {
+  layLines();
+  taskRowsEl.innerHTML = data.rows.map(function (row, i) {
+    if (hiddenRow[i]) return ''; // in a collapsed phase
     var attrs = ' data-id="' + esc(row.id) + '" role="button" tabindex="0"';
     function tip(text) { return ' title="' + esc(text + ' · click to go to it, drag to reorder, E to edit') + '"'; }
     if (row.type === 'phase') {
-      return '<div class="task-row ph"' + attrs + (row.color ? ' style="' + colorVar(row).slice(2) + '"' : '') + tip(row.name + ' · ' + itemLabel(row)) + '><i class="row-icon"></i><span class="row-name">' + esc(row.name) + '</span>' + more + '</div>';
+      var shut = isFolded(row.id);
+      return '<div class="task-row ph' + (shut ? ' shut' : '') + '"' + attrs + ' aria-expanded="' + !shut + '"' + (row.color ? ' style="' + colorVar(row).slice(2) + '"' : '') +
+        ' title="' + esc(row.name + ' · ' + itemLabel(row) + ' · click to go to it, drag to reorder, ← → to collapse or expand, E to edit') + '">' +
+        foldBtn(row) + '<i class="row-icon"></i><span class="row-name">' + esc(row.name) + '</span>' +
+        (foldCount[row.id] ? '<span class="meta">' + foldCount[row.id] + '</span>' : '') + more + '</div>';
     }
     if (row.type === 'milestone') {
       return '<div class="task-row ms"' + attrs + tip(row.name + ' · ' + itemLabel(row)) + '><i class="row-icon"></i>' +

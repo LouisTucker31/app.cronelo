@@ -74,6 +74,7 @@
 <aside class="task-panel" aria-label="Task list" data-panel>
 <div class="task-panel-head">
 <span class="task-panel-title">Task</span>
+<button class="fold-all" type="button" hidden data-fold-all><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 20 5-5 5 5"></path><path d="m7 4 5 5 5-5"></path></svg></button>
 <button class="caret" type="button" aria-expanded="false" aria-controls="task-list" aria-label="Show task list" title="Show task list" data-panel-toggle><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
 </div>
 <div class="task-panel-body" id="task-list"><div class="task-panel-rows" data-task-rows></div></div>
@@ -113,6 +114,7 @@
 <select aria-label="Person" data-lf="person"></select>
 <button class="clear-filters" type="button" hidden data-lf-clear>Clear filters</button>
 <span class="item-count" data-list-count></span>
+<button class="btn" type="button" hidden data-fold-all><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 20 5-5 5 5"></path><path d="m7 4 5 5 5-5"></path></svg><span>Collapse all</span></button>
 <div class="menu-wrap">
 <button class="btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="cols-menu" data-cols-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path><path d="M15 3v18"></path></svg>Columns<b class="hidden-count" hidden data-hidden-count></b></button>
 <div class="dropdown check-menu" id="cols-menu" hidden data-cols-menu></div>

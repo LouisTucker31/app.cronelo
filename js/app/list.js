@@ -6,7 +6,8 @@
 // sort by it (again for descending, a third time back to plan order); filter by name,
 // type, status or phase; hide columns from their heading or the Columns menu, which
 // also brings them back. In plan order, phases head their sections and subtasks sit
-// indented under their task. Clicking a row edits it with the same form as the timeline,
+// indented under their task; a phase's chevron (or ← →) collapses its section, the same
+// as on the timeline. Clicking a row edits it with the same form as the timeline,
 // so a change made on either page shows on both. Sort, filters and hidden columns are
 // remembered in this browser.
 var app = document.querySelector('.app');
@@ -67,7 +68,9 @@ var LIST_COLS = [
     cell: function (r) {
       var ic = r.type === 'phase' ? '<i class="list-icon ph" style="' + colorVar(r).slice(2) + '"></i>' : r.type === 'milestone' ? '<i class="list-icon ms"></i>'
         : '<i class="list-icon' + (r.parent ? ' sub' : '') + '" style="' + colorVar(r).slice(2) + '"></i>';
-      return '<div class="name-cell">' + ic + '<span class="list-name">' + esc(r.name) + '</span></div>';
+      var n = listHidden[r.id];
+      return '<div class="name-cell">' + (r.type === 'phase' ? foldBtn(r) : '') + ic + '<span class="list-name">' + esc(r.name) + '</span>' +
+        (n ? '<span class="list-hidden">' + n + ' hidden</span>' : '') + '</div>';
     } },
   { key: 'type', label: 'Type',
     val: function (r) { return r.type === 'task' && r.parent ? 'subtask' : r.type; },
@@ -172,9 +175,13 @@ function sortVal(v) {
 }
 
 // The rows to show, in order. In plan order a phase stays as a heading while anything
-// in its section is shown, even if the phase itself is filtered out. When sorted, rows
-// that tie keep their plan (timeline) order.
+// in its section is shown, even if the phase itself is filtered out, and a collapsed
+// phase hides its section (listHidden counts what it hides). When sorted, rows that tie
+// keep their plan (timeline) order, and nothing is collapsed.
+var listHidden = {}; // collapsed phase id → how many of its rows are hidden
+
 function listRows() {
+  listHidden = {};
   var rows = data.rows.filter(matches);
   var col = listState.sort && colByKey(listState.sort);
   if (col) {
@@ -182,11 +189,19 @@ function listRows() {
       return a.v < b.v ? -listState.dir : a.v > b.v ? listState.dir : a.i - b.i;
     }).map(function (x) { return x.r; });
   }
-  if (!filtering()) return rows;
-  return data.rows.filter(function (r, i) {
-    if (matches(r)) return true;
-    if (r.type !== 'phase') return false;
-    return data.rows.slice(i + 1, sectionEnd(r.id)).some(matches);
+  if (filtering()) {
+    rows = data.rows.filter(function (r, i) {
+      if (matches(r)) return true;
+      if (r.type !== 'phase') return false;
+      return data.rows.slice(i + 1, sectionEnd(r.id)).some(matches);
+    });
+  }
+  layLines();
+  return rows.filter(function (r) {
+    if (!hiddenRow[rowIndex[r.id]]) return true;
+    var ph = data.rows[lineRows[lineOf[rowIndex[r.id]]]].id;
+    listHidden[ph] = (listHidden[ph] || 0) + 1;
+    return false;
   });
 }
 
@@ -226,6 +241,7 @@ function renderList() {
   }
   listBody.innerHTML = body;
   listEl.classList.toggle('flat', flat);
+  syncFoldAll();
 
   var shown = rows.length;
   var total = data.rows.length;
@@ -518,13 +534,22 @@ listBody.addEventListener('click', function (e) {
   if (listDragged()) return;
   if (e.target.closest('[data-list-clear]')) return clearFilters();
   if (e.target.closest('[data-list-add]')) return openForm();
+  var fold = e.target.closest('[data-fold]');
+  if (fold) return toggleFold(fold.getAttribute('data-fold'));
   var tr = e.target.closest('.list-row[data-id]');
   if (tr) openEdit(tr.getAttribute('data-id'));
 });
 listBody.addEventListener('keydown', function (e) {
-  if (e.key !== 'Enter' && e.key !== ' ') return;
   var tr = e.target.closest('.list-row[data-id], .list-add');
   if (!tr || e.target !== tr) return;
+  // ← and → collapse and expand a phase, in plan order (a sorted list doesn't collapse).
+  if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && tr.classList.contains('l-ph') && !listEl.classList.contains('flat')) {
+    e.preventDefault();
+    var fid = tr.getAttribute('data-id');
+    if (isFolded(fid) !== (e.key === 'ArrowLeft')) toggleFold(fid);
+    return;
+  }
+  if (e.key !== 'Enter' && e.key !== ' ') return;
   e.preventDefault();
   if (tr.hasAttribute('data-list-add')) openForm();
   else openEdit(tr.getAttribute('data-id'));

@@ -16,6 +16,7 @@ var STORE = {
   page: 'roadmapPage',
   view: 'roadmapView',
   list: 'roadmapList',
+  folded: 'roadmapFolded', // collapsed phases, per project: { <project id>: [phase ids] }
   board: 'roadmapBoard',
   cal: 'roadmapCal',
   home: 'roadmapHome',

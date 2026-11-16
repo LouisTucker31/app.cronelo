@@ -118,6 +118,7 @@ function goToItem(id) {
   }
   if (page !== 'list') return goToRow(id);
   var sel = '.list-row[data-id="' + q + '"]';
+  unfoldTo(id); // it's in a collapsed phase
   if (!listBody.querySelector(sel)) clearFilters(); // it was filtered out
   freshId = id;
   renderList();

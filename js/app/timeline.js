@@ -228,6 +228,121 @@ data.rows.forEach(function (row, i) { // every row needs an id to be edited
   if (!row.id) rowIndex[row.id = uniqueId(row.name)] = i;
 });
 
+// Collapsed phases: a collapsed phase keeps its own row but hides everything in its
+// section, on the timeline and the list alike. Remembered in this browser, per project.
+var foldedAll = localStore.getJSON(STORE.folded) || {};
+var lineOf = [];   // each row's line on the timeline; a hidden row gets its phase's line
+var hiddenRow = []; // true for rows inside a collapsed phase
+var lineRows = []; // the row index on each line
+var foldCount = {}; // collapsed phase id → how many rows it hides
+
+function isFolded(id) {
+  return (foldedAll[currentId] || []).indexOf(id) >= 0;
+}
+
+function layLines() {
+  lineOf = [];
+  hiddenRow = [];
+  lineRows = [];
+  foldCount = {};
+  var phaseLine = -1;
+  var folding = null;
+  data.rows.forEach(function (row, i) {
+    if (row.type === 'phase') {
+      folding = isFolded(row.id) ? row.id : null;
+      if (folding) foldCount[folding] = 0;
+    } else if (folding) {
+      hiddenRow[i] = true;
+      lineOf[i] = phaseLine;
+      foldCount[folding]++;
+      return;
+    }
+    lineOf[i] = lineRows.length;
+    if (row.type === 'phase') phaseLine = lineOf[i];
+    lineRows.push(i);
+  });
+}
+
+// Save the collapsed phases (ids of deleted phases drop out) and redraw both pages.
+function saveFolded(ids) {
+  ids = ids.filter(function (p) { return rowIndex[p] != null; });
+  if (ids.length) foldedAll[currentId] = ids;
+  else delete foldedAll[currentId];
+  localStore.set(STORE.folded, JSON.stringify(foldedAll));
+  renderPlan();
+  renderTaskList();
+  syncPanelScroll();
+  renderList();
+}
+
+function setFolded(id, fold) {
+  saveFolded((foldedAll[currentId] || []).filter(function (p) { return p !== id; }).concat(fold ? [id] : []));
+}
+
+// Collapse or expand every phase at once.
+function setAllFolded(fold) {
+  saveFolded(fold ? data.rows.filter(function (r) { return r.type === 'phase'; }).map(function (r) { return r.id; }) : []);
+}
+
+// Collapse all / Expand all, in the task list's heading and the list's toolbar: expands
+// everything once every phase is collapsed, otherwise collapses them all. Hidden with no phases.
+var foldAllBtns = Array.prototype.slice.call(document.querySelectorAll('[data-fold-all]'));
+var FOLD_ICONS = { shut: '<path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path>', open: '<path d="m7 20 5-5 5 5"></path><path d="m7 4 5 5 5-5"></path>' };
+
+function allFolded() {
+  var phases = data.rows.filter(function (r) { return r.type === 'phase'; });
+  return phases.length > 0 && phases.every(function (r) { return isFolded(r.id); });
+}
+
+function syncFoldAll() {
+  var any = data.rows.some(function (r) { return r.type === 'phase'; });
+  var shut = allFolded();
+  var label = shut ? 'Expand all phases' : 'Collapse all phases';
+  foldAllBtns.forEach(function (b) {
+    b.hidden = !any || !!b.closest('.list.flat'); // a sorted list doesn't collapse
+    b.title = label;
+    b.setAttribute('aria-label', label);
+    b.querySelector('svg').innerHTML = FOLD_ICONS[shut ? 'shut' : 'open'];
+    var text = b.querySelector('span');
+    if (text) text.textContent = shut ? 'Expand all' : 'Collapse all';
+  });
+}
+
+foldAllBtns.forEach(function (b) {
+  b.addEventListener('click', function () {
+    setAllFolded(!allFolded());
+    b.focus();
+  });
+});
+
+// A chevron click or ← →: the focus stays on the same chevron or row after the redraw.
+function toggleFold(id) {
+  var el = document.activeElement;
+  var wrap = el && el.closest('[data-task-rows], [data-list-body]');
+  var sel = el && el.hasAttribute('data-fold') ? '[data-fold="' + CSS.escape(id) + '"]'
+    : el && el.getAttribute('data-id') === id ? '[data-id="' + CSS.escape(id) + '"]' : null;
+  setFolded(id, !isFolded(id));
+  var again = wrap && sel && wrap.querySelector(sel);
+  if (again) again.focus();
+}
+
+// Expand the phase a row is hidden in, if it is, so the row can be shown.
+function unfoldTo(id) {
+  var i = rowIndex[id];
+  if (i == null || data.rows[i].type === 'phase') return;
+  var ph = phaseOf(data.rows[i]);
+  if (ph && isFolded(ph)) setFolded(ph, false);
+}
+
+// The chevron that collapses or expands a phase, on the timeline and the list. It's for the
+// mouse; from the keyboard, ← and → on the phase's row do the same.
+function foldBtn(row) {
+  var shut = isFolded(row.id);
+  return '<button type="button" class="fold-btn' + (shut ? ' shut' : '') + '" data-fold="' + esc(row.id) + '" tabindex="-1" aria-expanded="' + !shut +
+    '" aria-label="' + (shut ? 'Expand ' : 'Collapse ') + esc(row.name) + '" title="' + (shut ? 'Expand phase' : 'Collapse phase') + '">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>';
+}
+
 function dayX(day) {
   return xOf(PLAN_START + day * DAY);
 }
@@ -299,7 +414,7 @@ function isPoint(row) {
 
 // Where a row's shape sits: horizontal extent, vertical centre and top edge.
 function box(row, i) {
-  var cy = workload ? (wl.cy[row.id] != null ? wl.cy[row.id] : ROW_Y) : ROW_Y + i * ROW_PX;
+  var cy = workload ? (wl.cy[row.id] != null ? wl.cy[row.id] : ROW_Y) : ROW_Y + (lineOf[i] != null ? lineOf[i] : i) * ROW_PX;
   if (isPoint(row)) {
     var x = dayX(row.type === 'milestone' ? row.day : row.start);
     var xe = row.end != null ? dayX(row.end) : x; // a milestone's finish diamond
@@ -326,6 +441,7 @@ function dayGroups() {
   var run = null;
   if (scale.unit !== 'hour') {
     data.rows.forEach(function (row, i) {
+      if (hiddenRow[i]) return; // in a collapsed phase: not drawn, and doesn't break a run
       var day = intraday(row) ? Math.floor(startDay(row)) : null;
       if (day != null && run && run.day === day) {
         run.to = i;
@@ -338,7 +454,7 @@ function dayGroups() {
   }
   grouped = {};
   groups.forEach(function (g) {
-    for (var i = g.from; i <= g.to; i++) grouped[data.rows[i].id] = g;
+    for (var i = g.from; i <= g.to; i++) if (!hiddenRow[i]) grouped[data.rows[i].id] = g;
   });
   return groups;
 }
@@ -348,13 +464,13 @@ function dayGroups() {
 function groupHtml(g) {
   var x1 = dayX(g.day);
   var w = Math.max(dayX(g.day + 1) - x1, 64);
-  return data.rows.slice(g.from, g.to + 1).map(function (r, k) {
+  return data.rows.slice(g.from, g.to + 1).filter(function (r) { return grouped[r.id] === g; }).map(function (r) {
     var s = startDay(r);
     var span = timeOf(s) + (r.end != null ? '–' + timeOf(r.end) : '');
     var mark = r.type === 'phase' ? 'ph' : r.type === 'milestone' ? 'ms' : r.parent ? 'sub' : '';
     return '<div class="workload-group row-pill' + (r.id === freshId ? ' fresh' : '') + '" data-group="' + g.day + '" data-first="' + s +
       '" role="button" tabindex="0" title="' + esc(r.name + ' · ' + itemLabel(r) + ' · click to see it by the hour') +
-      '" style="left: ' + x1 + 'px; top: ' + (ROW_Y + (g.from + k) * ROW_PX - 10) + 'px; min-width: ' + w + 'px">' +
+      '" style="left: ' + x1 + 'px; top: ' + (box(r, rowIndex[r.id]).cy - 10) + 'px; min-width: ' + w + 'px">' +
       '<i class="' + mark + '" style="' + colorVar(r).slice(2) + '"></i>' + span + '</div>';
   }).join('');
 }
@@ -498,6 +614,8 @@ function workloadHtml() {
 }
 
 function renderPlan() {
+  layLines();
+  syncFoldAll();
   var html = '';
   var bands = '';
   if (workload) {
@@ -509,7 +627,7 @@ function renderPlan() {
   }
   data.rows.forEach(function (row, i) {
     if (grouped[row.id]) return; // drawn as part of a day group
-    if (workload && row.type === 'phase') return;
+    if (workload ? row.type === 'phase' : hiddenRow[i]) return; // workload ignores collapsing
     var b = box(row, i);
     var who = personById(row.person);
     var face = workload ? null : who; // the workload row already says whose it is
@@ -522,13 +640,15 @@ function renderPlan() {
       html += '<div class="phase-line" style="' + span + 'top: ' + (b.cy + 6) + 'px' + colorVar(row) + '"></div>' +
         '<div class="phase-cap' + state + '"' + tip + ' style="left: ' + b.x1 + 'px; top: ' + (b.cy + 2) + 'px' + colorVar(row) + '"></div>' +
         (row.end != null ? '<div class="phase-cap' + state + '"' + tip + ' style="left: ' + b.x2 + 'px; top: ' + (b.cy + 2) + 'px' + colorVar(row) + '"></div>' : '') +
-        '<div class="phase' + state + '"' + tip + ' style="left: ' + (b.x1 - 6) + 'px; top: ' + (b.cy - 13) + 'px' + colorVar(row) + '">' + esc(row.name) + '</div>';
+        '<div class="phase' + state + '"' + tip + ' style="left: ' + (b.x1 - 6) + 'px; top: ' + (b.cy - 13) + 'px' + colorVar(row) + '">' + foldBtn(row) + esc(row.name) +
+        (foldCount[row.id] ? '<span class="phase-hidden">' + itemsWord(foldCount[row.id]) + ' hidden</span>' : '') + '</div>';
       // A tinted band behind the whole section, over the phase's time: up to its end, or
       // for an open-ended phase up to the next phase's start (or the end of the timeline).
-      var next = data.rows[sectionEnd(row.id)];
+      var end = sectionEnd(row.id);
+      var next = data.rows[end];
       var bx2 = row.end != null ? b.x2 : next && dayX(next.start) > b.x1 ? dayX(next.start) : xOf(rangeEnd);
       bands += '<div class="band" style="left: ' + b.x1 + 'px; width: ' + (bx2 - b.x1) + 'px; top: ' + (b.cy - ROW_PX / 2) +
-        'px; height: ' + (sectionEnd(row.id) - i) * ROW_PX + 'px' + colorVar(row) + '"></div>';
+        'px; height: ' + ((end < data.rows.length ? lineOf[end] : lineRows.length) - lineOf[i]) * ROW_PX + 'px' + colorVar(row) + '"></div>';
     } else if (row.type === 'milestone') {
       // A diamond, or with a finish, a diamond at each end joined by a line.
       if (row.end != null) {
@@ -556,12 +676,13 @@ function renderPlan() {
   bandsEl.innerHTML = bands;
 
   // Leave a screen of blank space below the last row so the chart can always scroll down.
-  var lastRow = ROW_Y + (workload ? wl.lanes : data.rows.length) * ROW_PX;
+  var lastRow = ROW_Y + (workload ? wl.lanes : lineRows.length) * ROW_PX;
   chartBody.style.minHeight = Math.max(620, lastRow + scroller.clientHeight - 41 - ROW_PX) + 'px';
 
   // Each arrow leaves the end of `from` and drops onto the start of `to`.
   depsEl.innerHTML = data.deps.filter(function (dep) {
-    return !workload && rowIndex[dep[0]] != null && rowIndex[dep[1]] != null && !grouped[dep[0]] && !grouped[dep[1]];
+    return !workload && rowIndex[dep[0]] != null && rowIndex[dep[1]] != null && !grouped[dep[0]] && !grouped[dep[1]] &&
+      !hiddenRow[rowIndex[dep[0]]] && !hiddenRow[rowIndex[dep[1]]];
   }).map(function (dep) {
     var fi = rowIndex[dep[0]];
     var ti = rowIndex[dep[1]];
