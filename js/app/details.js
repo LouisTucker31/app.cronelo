@@ -3,18 +3,10 @@
 'use strict';
 
 // Item details popup: what a clicked bar, milestone or phase is, when it happens, how
-// it's going, what it depends on and what's waiting on it, with an Edit button to change
-// it. It sits just below the item (above it near the bottom of the screen) and closes
+// it's going, with an Edit button to change it. It sits just below the item (above it near the bottom of the screen) and closes
 // with Esc, the ×, a click elsewhere or scrolling the chart.
 var peek = document.querySelector('[data-peek]');
 var peekId = null;
-
-function rowLinks(ids) {
-  return ids.filter(function (id) { return rowIndex[id] != null; }).map(function (id) {
-    var r = data.rows[rowIndex[id]];
-    return '<span class="details-link"><i class="' + (r.type === 'milestone' ? 'ms' : 'tk') + '" style="' + colorVar(r).slice(2) + '"></i>' + esc(r.name) + '</span>';
-  }).join('');
-}
 
 function openPeek(id, el, clientX) {
   var row = data.rows[rowIndex[id]];
@@ -41,10 +33,6 @@ function openPeek(id, el, clientX) {
   if (row.type !== 'phase') {
     var ph = phaseOf(row.parent ? data.rows[rowIndex[row.parent]] : row);
     if (ph) items.push(['Phase', esc(data.rows[rowIndex[ph]].name)]);
-    var after = rowLinks(data.deps.filter(function (d) { return d[1] === id; }).map(function (d) { return d[0]; }));
-    var before = rowLinks(data.deps.filter(function (d) { return d[0] === id; }).map(function (d) { return d[1]; }));
-    if (after) items.push(['Depends on', after]);
-    if (before) items.push(['Holds up', before]);
   }
   if (row.notes) items.push(['Notes', '<span class="details-notes">' + esc(row.notes) + '</span>']);
   peek.querySelector('[data-peek-body]').innerHTML = items.map(function (it) {

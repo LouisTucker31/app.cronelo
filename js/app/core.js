@@ -256,9 +256,10 @@ function uniqueId(name) {
 // the saved plan no longer matches it and is dropped.
 function loadPlan() {
   var base = data.rows.slice();
-  var sig = JSON.stringify([base, data.deps]);
+  // The [] is where the starting plan's dependencies used to go: kept so plans saved
+  // before they were removed still match.
+  var sig = JSON.stringify([base, []]);
   data.base = base;
-  data.baseDeps = data.deps.slice(); // a copy: edits add to data.deps in place
   if (!data.basePeople) data.basePeople = (data.people || []).slice();
   data.people = data.basePeople.slice();
   data.sig = sig;
@@ -272,7 +273,6 @@ function loadPlan() {
     ['start', 'end', 'day'].forEach(function (k) { if (r[k] != null) r[k] += shift; });
     return r;
   }).filter(Boolean);
-  data.deps = saved.deps;
 }
 
 function writePlan() {
@@ -283,7 +283,6 @@ function writePlan() {
       var i = data.base.indexOf(r);
       return i >= 0 ? { base: i } : r;
     }),
-    deps: data.deps,
     people: data.people
   };
   saveData(planKey(), JSON.stringify(plan));

@@ -1,11 +1,11 @@
-// The task form: creating and editing tasks, milestones and phases, people, dependencies and deleting.
+// The task form: creating and editing tasks, milestones and phases, people and deleting.
 // Part of the app: js/cloud.js loads js/app/*.js in order once you're signed in; they share one scope.
 'use strict';
 
 // Task form: creates a task, milestone or phase row, or edits one. Everything js/data.js
 // can describe can be entered here: name, dates (optionally with times), colour, phase,
-// parent task, progress, dependencies and notes. Colour, person, phase, subtask, progress and
-// dependencies are chips that show their value; a chip opens its picker in the panel below. A new row goes at the end of its phase, or
+// parent task, progress and notes. Colour, person, phase, subtask and progress are chips
+// that show their value; a chip opens its picker in the panel below. A new row goes at the end of its phase, or
 // straight after its parent's other subtasks; an edited row moves only if its phase or
 // parent changed.
 var dialog = document.querySelector('[data-new-dialog]');
@@ -54,8 +54,6 @@ function syncForm() {
   form.elements.phase.disabled = type === 'task' && !!form.elements.parent.value;
   form.querySelector('[data-progress-out]').textContent = form.elements.progress.value + '%';
   form.querySelector('[data-chip-bar]').style.width = form.elements.progress.value + '%';
-  var deps = form.querySelectorAll('[name="deps"]:checked').length;
-  form.querySelector('[data-deps-count]').textContent = deps ? 'Depends on ' + deps : 'Depends on';
   var color = form.querySelector('[name="color"]:checked');
   var named = COLORS.filter(function (c, i) { return (i ? c[1] : '') === (color ? color.value : ''); })[0] || COLORS[0];
   form.querySelector('[data-chip-dot]').style.background = named[1];
@@ -202,14 +200,6 @@ function fillOptions(row) {
 
   fillPeople('');
   hidePersonBox();
-
-  form.querySelector('[data-dep-options]').innerHTML = data.rows.filter(function (r) {
-    return (r.type === 'task' || r.type === 'milestone') && r !== row;
-  }).map(function (r) {
-    return '<label class="dep-option' + (r.parent ? ' sub' : '') + '"><input type="checkbox" name="deps" value="' + esc(r.id) + '">' +
-      '<i class="' + (r.type === 'milestone' ? 'ms' : 'tk') + '" style="' + colorVar(r).slice(2) + '"></i><span>' + esc(r.name) + '</span>' +
-      '<em>' + itemLabel(r) + '</em></label>';
-  }).join('') || '<p class="deps-empty">Nothing to depend on yet. Tasks and milestones you add appear here.</p>';
 }
 
 // Opens the form empty to create a row, or filled in from `row` to edit it. `spot`
@@ -244,11 +234,6 @@ function openForm(row, spot) {
     }
     if (row.type !== 'phase') f.phase.value = phaseOf(row.parent ? data.rows[rowIndex[row.parent]] : row);
     if (personById(row.person)) fillPeople(row.person);
-    data.deps.forEach(function (dep) {
-      if (dep[1] !== row.id) return;
-      var box = form.querySelector('[name="deps"][value="' + CSS.escape(dep[0]) + '"]');
-      if (box) box.checked = true;
-    });
   } else if (spot && scale.unit !== 'hour') {
     f.startDate.value = isoDate(spot.time); // the clicked day
   } else if (scale.unit === 'hour') {
@@ -524,17 +509,9 @@ function saveRow() {
       at = placeFor(row, phase);
       Array.prototype.splice.apply(data.rows, [at, 0].concat(block));
     }
-    // Its dependencies are replaced by whatever is ticked now.
-    data.deps = data.deps.filter(function (dep) { return dep[1] !== row.id; });
   } else {
     at = placeFor(row, f.phase.value);
     data.rows.splice(at, 0, row);
-  }
-
-  if (type !== 'phase') {
-    Array.prototype.forEach.call(form.querySelectorAll('[name="deps"]:checked'), function (box) {
-      data.deps.push([box.value, row.id]);
-    });
   }
 
   refresh();
@@ -567,10 +544,7 @@ function armDelete(on) {
 
 function deleteRow() {
   if (!deleteBtn.classList.contains('armed')) return armDelete(true);
-  var gone = takeOut(editing).map(function (r) { return r.id; });
-  data.deps = data.deps.filter(function (dep) {
-    return gone.indexOf(dep[0]) < 0 && gone.indexOf(dep[1]) < 0;
-  });
+  takeOut(editing);
   refresh();
   savePlan();
   dialog.close();

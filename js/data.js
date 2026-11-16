@@ -13,9 +13,6 @@
 window.CRONELO = {
   rows: [],
 
-  // [from, to]: `to` can't start until `from` is done, e.g. ['wireframes', 'ui-mockups'].
-  deps: [],
-
   // People to put on rows, e.g. { id: 'priya-shah', name: 'Priya Shah', color: '#8b5cf0' }.
   // More can be added from the task form; those are saved to your account with the plan.
   people: []

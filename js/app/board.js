@@ -14,11 +14,13 @@ var showBtn = boardEl.querySelector('[data-show-btn]');
 var showMenu = boardEl.querySelector('[data-show-menu]');
 var CARD_FIELDS = [
   ['phase', 'Phase'], ['date', 'Date'], ['time', 'Time'], ['length', 'Length'], ['progress', 'Progress'],
-  ['person', 'Person'], ['status', 'Status'], ['deps', 'Depends on'], ['color', 'Colour']
+  ['person', 'Person'], ['status', 'Status'], ['color', 'Colour']
 ];
-var board = { group: 'status', subtasks: true, width: 'comfortable', hide: ['length', 'deps'] };
+var board = { group: 'status', subtasks: true, width: 'comfortable', hide: ['length'] };
 var savedBoard = localStore.getJSON(STORE.board);
 if (savedBoard) Object.keys(board).forEach(function (k) { if (savedBoard[k] != null) board[k] = savedBoard[k]; });
+// Only fields that still exist (Depends on is gone), so the hidden count stays right.
+board.hide = board.hide.filter(function (k) { return CARD_FIELDS.some(function (f) { return f[0] === k; }); });
 var dragId = null; // the card being dragged
 
 function saveBoard() {
@@ -98,7 +100,6 @@ function boardColumns(withHidden) {
 
 var ICON_CAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3"></path><path d="M16 2v3"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path></svg>';
 var ICON_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>';
-var ICON_LINK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
 
 function cardHtml(r) {
   var who = personById(r.person);
@@ -115,12 +116,6 @@ function cardHtml(r) {
     meta.push('<span class="card-date">' + ICON_CLOCK + timeOf(s) + (r.end != null && r.end - s < 1 ? '–' + timeOf(r.end) : '') + '</span>');
   }
   if (showing('length') && r.end != null) meta.push('<span class="card-date">' + duration(r) + '</span>');
-  if (showing('deps')) {
-    var ds = depsOf(r);
-    if (ds.length) {
-      meta.push('<span class="card-date" title="Depends on ' + esc(ds.map(function (d) { return d.name; }).join(', ')) + '">' + ICON_LINK + ds.length + '</span>');
-    }
-  }
   var face = showing('person') && who && board.group !== 'person'
     ? '<span class="card-person" title="' + esc(who.name) + '">' + avatar(who) + '</span>' : '';
   var p = r.type === 'task' ? r.progress || 0 : 0;

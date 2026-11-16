@@ -5,15 +5,14 @@
 // Copies of the plan as it is now, for a duplicate or a template: js/data.js rows become
 // ordinary saved rows so the copy stands on its own.
 function planCopy() {
-  return JSON.parse(JSON.stringify({ rows: data.rows, deps: data.deps, people: data.people }));
+  return JSON.parse(JSON.stringify({ rows: data.rows, people: data.people }));
 }
 
-function savedPlan(rows, deps, people) {
+function savedPlan(rows, people) {
   return {
     sig: data.sig,
     planStart: PLAN_START,
     rows: rows.map(function (r) { r.added = true; return r; }),
-    deps: deps,
     people: people
   };
 }
@@ -109,7 +108,7 @@ function saveProjName() {
     copy.rows.forEach(function (r) {
       ['start', 'end', 'day'].forEach(function (k) { if (r[k] != null) r[k] += shift; });
     });
-    saveData(planKey(id), JSON.stringify(savedPlan(copy.rows, copy.deps, copy.people)));
+    saveData(planKey(id), JSON.stringify(savedPlan(copy.rows, copy.people)));
   }
   projects.push({ id: id, name: name, tags: t ? t.tags || (t.tag ? [t.tag] : []) : [] });
   saveProjects();
@@ -195,7 +194,7 @@ function duplicateProject() {
   var copy = planCopy();
   var name = project().name + ' (copy)';
   var id = projectId(name);
-  saveData(planKey(id), JSON.stringify(savedPlan(copy.rows, copy.deps, copy.people)));
+  saveData(planKey(id), JSON.stringify(savedPlan(copy.rows, copy.people)));
   projects.push({ id: id, name: name, tags: projectTags.slice() });
   saveProjects();
   openProject(id);
@@ -206,7 +205,7 @@ function duplicateProject() {
 function openTemplateDialog() {
   actForm.innerHTML = '<div class="dialog-head"><h2 id="act-title">Save as template</h2></div><div class="dialog-body">' +
     '<label class="field"><span class="field-label">Template name</span><input type="text" maxlength="60" value="' + esc(project().name) + '" data-tpl-name></label>' +
-    '<p class="act-note">Saves all ' + itemsWord(data.rows.length) + ', their dependencies and people. Progress is cleared, and dates move so a new project starts from the day it’s made.</p>' +
+    '<p class="act-note">Saves all ' + itemsWord(data.rows.length) + ' and the people on them. Progress is cleared, and dates move so a new project starts from the day it’s made.</p>' +
     '<p class="act-note" hidden data-tpl-replace></p></div>' +
     '<div class="dialog-foot"><button class="btn" type="button" data-act-close>Cancel</button><button class="primary" type="submit" data-tpl-save>Save template</button></div>';
   actDialog.showModal();
@@ -230,7 +229,7 @@ function openTemplateDialog() {
     copy.rows.forEach(function (r) { delete r.progress; });
     var day0 = copy.rows.length ? Math.floor(Math.min.apply(null, copy.rows.map(startDay))) : 0;
     var same = templates.filter(function (t) { return t.name.toLowerCase() === name.toLowerCase(); })[0];
-    var tpl = { id: same ? same.id : 'tpl-' + Date.now().toString(36), name: name, tags: projectTags.slice(), day0: day0, rows: copy.rows, deps: copy.deps, people: copy.people };
+    var tpl = { id: same ? same.id : 'tpl-' + Date.now().toString(36), name: name, tags: projectTags.slice(), day0: day0, rows: copy.rows, people: copy.people };
     templates = templates.filter(function (t) { return t !== same; }).concat([tpl]);
     saveTemplates();
     actDialog.close();
@@ -241,8 +240,7 @@ function openResetDialog() {
   var name = project().name;
   var nRows = data.rows.length;
   actForm.innerHTML = '<div class="dialog-head"><h2 id="act-title">Reset ' + esc(name) + '?</h2></div><div class="dialog-body">' +
-    '<p class="act-warn">This removes all ' + itemsWord(nRows) + ' and ' + data.deps.length + (data.deps.length === 1 ? ' dependency' : ' dependencies') +
-    ' from this project, leaving it empty. Its people and tags, and your notes, stay.</p>' +
+    '<p class="act-warn">This removes all ' + itemsWord(nRows) + ' from this project, leaving it empty. Its people and tags, and your notes, stay.</p>' +
     '<label class="checkbox"><input type="checkbox" data-reset-ok> I understand everything in this project will be removed</label>' +
     '<label class="field"><span class="field-label">Type <b>' + esc(name) + '</b> to confirm</span><input type="text" autocomplete="off" spellcheck="false" data-reset-name></label>' +
     '<p class="act-note">If you change your mind, Undo (' + shortcut(['mod', 'Z']) + ') brings everything back.</p></div>' +
@@ -263,7 +261,6 @@ function openResetDialog() {
     e.preventDefault();
     if (go.disabled) return;
     data.rows = [];
-    data.deps = [];
     closePeek();
     refresh();
     savePlan();

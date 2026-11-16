@@ -21,12 +21,12 @@ function onHome() {
   return app.classList.contains('on-home');
 }
 
-// A project's rows, deps and people: the open project's live, others read from storage
+// A project's rows and people: the open project's live, others read from storage
 // with their dates moved onto this week's day numbering.
 function projectPlan(id) {
-  if (id === currentId) return { rows: data.rows, deps: data.deps, people: data.people };
+  if (id === currentId) return { rows: data.rows, people: data.people };
   var saved = localStore.getJSON(planKey(id));
-  if (!saved || saved.sig !== data.sig) return { rows: data.base.slice(), deps: data.baseDeps.slice(), people: data.basePeople.slice() };
+  if (!saved || saved.sig !== data.sig) return { rows: data.base.slice(), people: data.basePeople.slice() };
   var shift = (saved.planStart - PLAN_START) / DAY;
   return {
     rows: saved.rows.map(function (r) {
@@ -36,7 +36,6 @@ function projectPlan(id) {
       ['start', 'end', 'day'].forEach(function (k) { if (c[k] != null) c[k] += shift; });
       return c;
     }).filter(Boolean),
-    deps: saved.deps || [],
     people: saved.people || []
   };
 }
@@ -336,7 +335,7 @@ function newProjectDialog(templateId) {
       var copy = JSON.parse(JSON.stringify(t));
       var shift = (TODAY - PLAN_START) / DAY - t.day0;
       copy.rows.forEach(function (r) { ['start', 'end', 'day'].forEach(function (k) { if (r[k] != null) r[k] += shift; }); });
-      saveData(planKey(id), JSON.stringify(savedPlan(copy.rows, copy.deps, copy.people)));
+      saveData(planKey(id), JSON.stringify(savedPlan(copy.rows, copy.people)));
     }
     projects.push({ id: id, name: name, tags: t ? t.tags || (t.tag ? [t.tag] : []) : [], openedAt: Date.now() });
     saveProjects();
@@ -375,7 +374,7 @@ function homeAction(act, id) {
     var nid = projectId(name);
     var plan = projectPlan(id);
     var copy = JSON.parse(JSON.stringify(plan));
-    saveData(planKey(nid), JSON.stringify(savedPlan(copy.rows, copy.deps, copy.people)));
+    saveData(planKey(nid), JSON.stringify(savedPlan(copy.rows, copy.people)));
     projects.push({ id: nid, name: name, tags: tagsOf(p), description: p.description, openedAt: Date.now() });
     saveProjects();
     return renderHome();
@@ -392,7 +391,7 @@ function homeAction(act, id) {
       var day0 = copy.rows.length ? Math.floor(Math.min.apply(null, copy.rows.map(startDay))) : 0;
       var same = templates.filter(function (t) { return t.name.toLowerCase() === name.toLowerCase(); })[0];
       templates = templates.filter(function (t) { return t !== same; }).concat([{
-        id: same ? same.id : 'tpl-' + Date.now().toString(36), name: name, tags: tagsOf(p), day0: day0, rows: copy.rows, deps: copy.deps, people: copy.people
+        id: same ? same.id : 'tpl-' + Date.now().toString(36), name: name, tags: tagsOf(p), day0: day0, rows: copy.rows, people: copy.people
       }]);
       saveTemplates();
       actDialog.close();

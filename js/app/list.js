@@ -55,12 +55,6 @@ function statusOf(row) {
   return p == null || p === 0 ? 'open' : p >= 1 ? 'done' : 'active';
 }
 
-function depsOf(row) {
-  return data.deps.filter(function (d) { return d[1] === row.id && rowIndex[d[0]] != null; }).map(function (d) {
-    return data.rows[rowIndex[d[0]]];
-  });
-}
-
 // Each column: its heading, the value it sorts by and the cell it draws. Name can't be hidden.
 var LIST_COLS = [
   { key: 'name', label: 'Name', fixed: true,
@@ -107,19 +101,17 @@ var LIST_COLS = [
       var p = personById(r.person);
       return p ? '<span class="list-person">' + avatar(p) + esc(p.name) + '</span>' : '<span class="empty-value">Unassigned</span>';
     } },
-  { key: 'deps', label: 'Depends on',
-    val: function (r) { return depsOf(r).length; },
-    cell: function (r) {
-      var ds = depsOf(r);
-      return ds.length ? '<span class="list-deps" title="' + esc(ds.map(function (d) { return d.name; }).join(', ')) + '">' +
-        esc(ds.map(function (d) { return d.name; }).join(', ')) + '</span>' : '<span class="empty-value">None</span>';
-    } },
   { key: 'notes', label: 'Notes',
     val: function (r) { return r.notes ? r.notes.toLowerCase() : '~'; }, // no notes sorts last
     cell: function (r) {
       return r.notes ? '<span class="list-notes" title="' + esc(r.notes) + '">' + esc(r.notes) + '</span>' : '';
     } }
 ];
+
+// A saved sort, hidden column or column order can name a column that's since gone (Depends on).
+listState.hidden = listState.hidden.filter(colByKey);
+listState.order = listState.order.filter(colByKey);
+if (listState.sort && !colByKey(listState.sort)) listState.sort = null;
 
 // Columns in the order chosen (dragged headings, or Move up / Move down in the Columns menu):
 // Name first, then the saved order, then any column not in it yet.

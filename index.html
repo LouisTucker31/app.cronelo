@@ -92,12 +92,8 @@
 <div class="grid-lines" data-mlines></div>
 <div class="dock"><button class="today" type="button" data-today>← Today</button></div>
 
-<!-- Plan rows and dependency arrows are drawn from js/data.js by js/app/timeline.js; phase bands sit behind them -->
+<!-- Plan rows are drawn from js/data.js by js/app/timeline.js; phase bands sit behind them -->
 <div class="bands" data-bands></div>
-<svg class="deps" aria-hidden="true">
-<defs><marker id="ah" viewBox="0 0 8 8" refX="4" refY="7" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L4 7L7 1" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></marker></defs>
-<g fill="none" stroke-width="1.1" stroke-linecap="square" data-deps></g>
-</svg>
 <div class="plan" data-plan></div>
 <div class="ghost" hidden data-ghost><span></span></div>
 </div>
@@ -188,7 +184,7 @@
 
 </div>
 
-<!-- New task form. Options (colours, phases, parents, dependencies) are filled in by js/app/task-form.js -->
+<!-- New task form. Options (colours, phases, parents) are filled in by js/app/task-form.js -->
 <dialog class="dialog" aria-labelledby="nt-title" data-new-dialog>
 <form method="dialog" novalidate data-new-form>
 <div class="dialog-head">
@@ -215,7 +211,6 @@
 <div class="chip-wrap" data-for="task milestone"><button class="chip chip-select" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="phase-menu" title="Phase" data-title="Phase" data-pick="phase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg><span class="hidden-label">Phase: </span><span data-pick-label></span></button><div class="dropdown chip-menu" id="phase-menu" role="menu" aria-label="Phase" hidden></div><select name="phase" hidden data-phases></select></div>
 <div class="chip-wrap" data-for="task"><button class="chip chip-select" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="parent-menu" title="Subtask of" data-title="Subtask of" data-pick="parent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 10 5 5-5 5"></path><path d="M4 4v7a4 4 0 0 0 4 4h12"></path></svg><span class="hidden-label">Subtask of: </span><span data-pick-label></span></button><div class="dropdown chip-menu" id="parent-menu" role="menu" aria-label="Subtask of" hidden></div><select name="parent" hidden data-parents></select></div>
 <button class="chip" type="button" aria-expanded="false" aria-controls="prop-progress" data-for="task" data-chip="progress"><span class="hidden-label">Progress: </span><span class="progress-bar"><b data-chip-bar></b></span><output data-progress-out>0%</output></button>
-<button class="chip" type="button" aria-expanded="false" aria-controls="prop-deps" data-for="task milestone" data-chip="deps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg><span data-deps-count>Depends on</span></button>
 </div>
 
 <div class="prop-panel" id="prop-color" hidden data-panel="color"><div class="swatches" role="radiogroup" aria-label="Colour" data-colors></div></div>
@@ -228,8 +223,6 @@
 </div>
 </div>
 <div class="prop-panel" id="prop-progress" hidden data-panel="progress"><input type="range" name="progress" min="0" max="100" step="5" value="0" aria-label="Progress"></div>
-<div class="prop-panel" id="prop-deps" hidden data-panel="deps"><span class="field-label">Depends on <em>can’t start until these finish</em></span><div class="deps-list" data-dep-options></div></div>
-
 <label class="field"><span class="field-label">Notes</span><textarea name="notes" rows="2" maxlength="1000" placeholder="What’s left to do, links, anything to remember"></textarea></label>
 
 <p class="form-error" role="alert" data-nt-error hidden></p>

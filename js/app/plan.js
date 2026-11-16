@@ -20,7 +20,6 @@ function snapshot() {
       var i = data.base.indexOf(r);
       return i >= 0 ? { base: i } : r;
     }),
-    deps: data.deps,
     people: data.people
   });
 }
@@ -51,7 +50,6 @@ function stepHistory(back) {
   current = from.pop();
   var s = JSON.parse(current);
   data.rows = s.rows.map(function (r) { return r.base != null ? data.base[r.base] : r; }).filter(Boolean);
-  data.deps = s.deps;
   data.people = s.people;
   closePeek();
   refresh();
@@ -150,7 +148,6 @@ function reloadPlan() {
   }
   staleTabs = false;
   data.rows = data.base.slice();
-  data.deps = data.baseDeps.slice();
   loadPlan();
   refresh();
   record(); // the other tab's change can be undone here too

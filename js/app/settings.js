@@ -152,7 +152,7 @@ function renderSettings() {
   // Reset or delete
   var only = projects.length < 2;
   html += '<section class="settings-section danger" id="set-danger"><h2>Reset or delete</h2>' +
-    '<div class="settings-danger"><div><b>Reset project</b><span>Remove every item and dependency, leaving it empty. People and tags stay.</span></div><button type="button" class="btn del" data-set-reset>Reset project…</button></div>' +
+    '<div class="settings-danger"><div><b>Reset project</b><span>Remove every item, leaving it empty. People and tags stay.</span></div><button type="button" class="btn del" data-set-reset>Reset project…</button></div>' +
     '<div class="settings-danger"><div><b>Delete project</b><span>' + (only ? 'This is your only project, so it can’t be deleted. Reset it instead.' : 'Remove the project and everything in it for good. This can’t be undone.') +
     '</span></div><button type="button" class="btn del" data-set-delete' + (only ? ' disabled' : '') + '>Delete project…</button></div></section>';
 
@@ -227,7 +227,7 @@ function movePhase(id, dir) {
 function openDeleteDialog() {
   var name = project().name;
   actForm.innerHTML = '<div class="dialog-head"><h2 id="act-title">Delete ' + esc(name) + '?</h2></div><div class="dialog-body">' +
-    '<p class="act-warn">This deletes the project and all ' + itemsWord(data.rows.length) + ' in it, its people and its dependencies, for good. It can’t be undone. Your notes, tags and templates stay.</p>' +
+    '<p class="act-warn">This deletes the project and all ' + itemsWord(data.rows.length) + ' in it, and its people, for good. It can’t be undone. Your notes, tags and templates stay.</p>' +
     '<label class="checkbox"><input type="checkbox" data-del-ok> I understand this project will be gone for good</label>' +
     '<label class="field"><span class="field-label">Type <b>' + esc(name) + '</b> to confirm</span><input type="text" autocomplete="off" spellcheck="false" data-del-name></label></div>' +
     '<div class="dialog-foot"><button class="btn" type="button" data-act-close>Cancel</button><button class="btn del" type="submit" disabled data-del-go>Delete project</button></div>';

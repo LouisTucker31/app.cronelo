@@ -88,8 +88,6 @@
   --line-4: #e2e6eb;
   --line-5: #dde1e6;
   --line-6: #a9b1ba;
-  --dep-line: #b3bbc4;
-  --dep-arrow: #9aa3ad;
   --text-1: #121417;
   --text-2: #14171a;
   --text-3: #1b1f24;
@@ -141,8 +139,6 @@
   --line-4: #2b3036;
   --line-5: #2b3036;
   --line-6: #5a6169;
-  --dep-line: #4d555e;
-  --dep-arrow: #6a737d;
   --text-1: #f1f3f5;
   --text-2: #f1f3f5;
   --text-3: #f1f3f5;
@@ -1119,23 +1115,6 @@ button.name:focus-visible {
   background: var(--focus);
 }
 
-.deps {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.deps g {
-  stroke: var(--dep-line);
-}
-
-.deps marker path {
-  stroke: var(--dep-arrow);
-}
-
 .bar {
   position: absolute;
   height: 20px;
@@ -1510,28 +1489,6 @@ button.name:focus-visible {
   display: block;
   height: 100%;
   background: var(--accent);
-}
-
-.details-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.details-link i {
-  flex: none;
-  width: 7px;
-  height: 7px;
-  border-radius: 2px;
-  background: var(--c, var(--accent));
-}
-
-.details-link i.ms {
-  width: 6px;
-  height: 6px;
-  background: var(--milestone);
-  transform: rotate(45deg);
-  border-radius: 1px;
 }
 
 .details-foot {
@@ -1974,7 +1931,7 @@ button:disabled {
   box-shadow: 0 0 0 3px var(--focus-glow);
 }
 
-/* Task form: colour, person, phase, subtask, progress and dependencies as chips showing their
+/* Task form: colour, person, phase, subtask and progress as chips showing their
    value. A chip opens its picker in the panel below; phase and subtask are selects. */
 .props {
   display: flex;
@@ -2128,10 +2085,6 @@ button:disabled {
   background: var(--surface-3);
 }
 
-.prop-panel .deps-list {
-  background: var(--white);
-}
-
 /* Read by screen readers, not shown: what a chip's value is */
 .hidden-label {
   position: absolute;
@@ -2176,8 +2129,7 @@ button:disabled {
   margin-top: -4px;
 }
 
-.checkbox input,
-.dep-option input {
+.checkbox input {
   accent-color: var(--accent);
   margin: 0;
 }
@@ -2228,70 +2180,6 @@ button:disabled {
 .swatch input:focus-visible+span {
   box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--focus);
   transform: scale(1.1);
-}
-
-.deps-list {
-  max-height: 132px;
-  overflow: auto;
-  border: 1px solid var(--line-5);
-  border-radius: 7px;
-  padding: 3px;
-}
-
-.deps-empty {
-  margin: 0;
-  padding: 6px 7px;
-  color: var(--text-faint);
-  font-size: 11.5px;
-}
-
-.dep-option {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  height: 26px;
-  padding: 0 7px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 11.5px;
-}
-
-.dep-option:hover {
-  background: var(--grey-971);
-}
-
-.dep-option.sub {
-  padding-left: 22px;
-}
-
-.dep-option span {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dep-option em {
-  font-style: normal;
-  font-size: 10px;
-  color: var(--text-faint);
-  white-space: nowrap;
-}
-
-.dep-option i {
-  flex: none;
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--c, var(--accent));
-}
-
-.dep-option i.ms {
-  width: 7px;
-  height: 7px;
-  background: var(--milestone);
-  transform: rotate(45deg);
-  border-radius: 1px;
 }
 
 .form-error {
@@ -2668,8 +2556,7 @@ button:disabled {
   color: var(--text-9);
 }
 
-[data-theme="dark"] .kind span:hover,
-[data-theme="dark"] .dep-option:hover {
+[data-theme="dark"] .kind span:hover {
   background: var(--surface-6);
 }
 
@@ -2678,9 +2565,7 @@ button:disabled {
   color: var(--on-strong);
 }
 
-[data-theme="dark"] .field-label em,
-[data-theme="dark"] .dep-option em,
-[data-theme="dark"] .deps-empty {
+[data-theme="dark"] .field-label em {
   color: var(--text-faint);
 }
 
@@ -2698,8 +2583,7 @@ button:disabled {
 }
 
 [data-theme="dark"] .dialog textarea,
-[data-theme="dark"] .chip,
-[data-theme="dark"] .prop-panel .deps-list {
+[data-theme="dark"] .chip {
   background: var(--surface);
   border-color: var(--line-1);
   color: var(--text-4);
@@ -3391,15 +3275,6 @@ button:disabled {
 .list-notes {
   display: inline-block;
   max-width: 260px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-  color: var(--text-6);
-}
-
-.list-deps {
-  display: inline-block;
-  max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;

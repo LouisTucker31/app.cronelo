@@ -212,13 +212,12 @@ function render() {
   renderPlan();
 }
 
-// Plan rows (tasks, milestones, phase headers), dependency arrows and footer stats,
+// Plan rows (tasks, milestones, phase headers) and footer stats,
 // all drawn from js/data.js. Rows sit on a 34px grid (whole pixels keep the lines crisp) starting at ROW_Y (row centre).
 var data = window.CRONELO;
 loadPlan();
 var ROW_Y = 51; // one empty row on top, where the Today button floats
 var ROW_PX = 34;
-var depsEl = chart.querySelector('[data-deps]');
 var bandsEl = chart.querySelector('[data-bands]');
 var freshId = null; // a just-created row, flashed briefly
 var movingId = null; // the row being dragged to a new time
@@ -497,8 +496,8 @@ function openDay(day, first) {
 // per item. Each person's tasks and milestones are packed into as few lanes as they fit
 // without overlapping on screen, and times when they have two timed tasks at once are
 // tinted red: that's their overload. In day view and coarser, a person's several timed
-// items on one day become one "n items" pill that opens the hour view. Phases and
-// dependency arrows aren't drawn here.
+// items on one day become one "n items" pill that opens the hour view. Phases aren't
+// drawn here.
 var workload = false;
 var wl = null; // the layout: each row's lane centre, each person's block
 
@@ -678,24 +677,6 @@ function renderPlan() {
   // Leave a screen of blank space below the last row so the chart can always scroll down.
   var lastRow = ROW_Y + (workload ? wl.lanes : lineRows.length) * ROW_PX;
   chartBody.style.minHeight = Math.max(620, lastRow + scroller.clientHeight - 41 - ROW_PX) + 'px';
-
-  // Each arrow leaves the end of `from` and drops onto the start of `to`.
-  depsEl.innerHTML = data.deps.filter(function (dep) {
-    return !workload && rowIndex[dep[0]] != null && rowIndex[dep[1]] != null && !grouped[dep[0]] && !grouped[dep[1]] &&
-      !hiddenRow[rowIndex[dep[0]]] && !hiddenRow[rowIndex[dep[1]]];
-  }).map(function (dep) {
-    var fi = rowIndex[dep[0]];
-    var ti = rowIndex[dep[1]];
-    var from = box(data.rows[fi], fi);
-    var to = box(data.rows[ti], ti);
-    var fx = isPoint(data.rows[fi]) ? from.x2 + 1 : from.x2;
-    var tx = isPoint(data.rows[ti]) ? to.cx : to.x1 + 5;
-    var ty = isPoint(data.rows[ti]) ? to.cy - 10 : to.top - 2;
-    var d = tx >= fx
-      ? 'M' + fx + ' ' + from.cy + 'H' + tx + 'V' + ty
-      : 'M' + fx + ' ' + from.cy + 'H' + (fx + 4) + 'V' + (ty - 8) + 'H' + tx + 'V' + ty;
-    return '<path d="' + d + '" marker-end="url(#ah)"></path>';
-  }).join('');
 
   renderStats();
   if (workload) renderPeopleList(); // lanes change with zoom, so the people rows do too
