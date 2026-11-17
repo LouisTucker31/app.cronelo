@@ -160,7 +160,7 @@ notesPop.addEventListener('keydown', function (e) {
     e.preventDefault();
     var text = t.value.trim();
     if (!text) return;
-    notes.push({ id: 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), text: text, done: false });
+    notes.unshift({ id: 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), text: text, done: false });
     t.value = '';
     saveNotes();
     renderNotes();
