@@ -128,7 +128,7 @@ function renderAgenda() {
   var prog = projectProgress();
   var counts = ['task', 'phase', 'milestone'].map(function (t) {
     var n = data.rows.filter(function (r) { return r.type === t; }).length;
-    return n ? plural(n, t, t + 's') : '';
+    return n ? '<span class="nw">' + plural(n, t, t + 's') + '</span>' : '';
   }).filter(Boolean).join(' · ');
   var html = '<div class="ag-card">' +
     (prog ? '<svg class="progress-ring" viewBox="0 0 16 16" width="40" height="40" aria-hidden="true" style="--p: ' + prog.p + '"><circle class="track" cx="8" cy="8" r="6.5"></circle>' +

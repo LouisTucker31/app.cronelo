@@ -8562,7 +8562,7 @@ button.pill {
   .ag-faces .avatar {
     width: 26px;
     height: 26px;
-    margin-left: -7px;
+    margin-left: -3px;
     border-color: var(--raised);
   }
 
@@ -8717,7 +8717,7 @@ button.pill {
     grid-template-columns: 52px 14px minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 0 10px;
-    min-height: 54px;
+    min-height: 50px;
     margin: 0 -8px;
     padding: 6px 8px;
     border-radius: 10px;
@@ -8732,7 +8732,8 @@ button.pill {
   }
 
   .ag-item.ms {
-    margin: 4px -8px;
+    margin: 4px 0;
+    grid-template-columns: 44px 14px minmax(0, 1fr) auto auto;
     background: color-mix(in srgb, var(--milestone) 12%, var(--surface));
   }
 
@@ -10251,6 +10252,23 @@ button.pill {
   .project-desc,
   .project-next {
     font-size: 14px;
+  }
+
+  /* Counts like "4 phases" wrap as a whole, never between the number and its word */
+  .nw {
+    white-space: nowrap;
+  }
+
+  /* While searching, the box has the top bar to itself: nothing peeks out around it */
+  .top:has(.search:focus-within) .m-logo,
+  .top:has(.search:focus-within) .notes-badge {
+    visibility: hidden;
+  }
+
+  /* Dates in fields start at the left, like the rest of the form (iPhones centre them) */
+  input[type=date]::-webkit-date-and-time-value,
+  input[type=time]::-webkit-date-and-time-value {
+    text-align: left;
   }
 
   /* Hints in fields at the body size; what's typed stays 16px, so the phone doesn't zoom */
