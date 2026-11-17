@@ -8170,8 +8170,13 @@ button.pill {
 }
 
 /* Groups controls that scroll sideways together on a phone; on bigger screens it isn't there */
-.toolbar-scroll {
+.toolbar-scroll,
+.m-select {
   display: contents;
+}
+
+.m-select-label {
+  display: none;
 }
 
 @keyframes m-sheet-in {
@@ -9469,7 +9474,7 @@ button.pill {
   }
 
   .list .toolbar .btn {
-    height: 32px;
+    height: 36px;
   }
 
   .list-table,
@@ -10020,7 +10025,7 @@ button.pill {
   }
 
   .home-bar .btn {
-    height: 32px;
+    height: 36px;
   }
 
   .home-filter {
@@ -10058,8 +10063,9 @@ button.pill {
 
   .home-grid.as-list .project-menu-btn {
     position: absolute;
-    top: 8px;
+    top: 12px;
     right: 8px;
+    transform: none;
     width: 32px;
     height: 32px;
     margin: 0;
@@ -10245,6 +10251,71 @@ button.pill {
   .project-desc,
   .project-next {
     font-size: 14px;
+  }
+
+  /* Hints in fields at the body size; what's typed stays 16px, so the phone doesn't zoom */
+  input::placeholder,
+  textarea::placeholder {
+    font-size: 14px;
+  }
+
+  /* A dropdown as a pill: the choice shown at the app's size, the real dropdown over it unseen
+     (js/app/mobile.js) */
+  .m-select {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+  }
+
+  .m-select select,
+  [data-theme="dark"] .m-select select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .m-select-label {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 32px 0 13px;
+    border: 1px solid var(--line-5);
+    border-radius: 18px;
+    background: var(--raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237b828b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 11px center / 13px no-repeat;
+    color: var(--text-4);
+    font: 500 13px Inter, system-ui, sans-serif;
+    white-space: nowrap;
+  }
+
+  .m-select:focus-within .m-select-label {
+    border-color: var(--focus);
+    box-shadow: 0 0 0 3px var(--focus-glow-soft);
+  }
+
+  .home-bar .segmented button {
+    height: 30px;
+  }
+
+  .home-filter {
+    height: 36px;
+    border-radius: 18px;
+  }
+
+  .avatar-stack .person-avatar {
+    width: 24px;
+    height: 24px;
+    margin-left: -4px;
+    font-size: 9.5px;
+  }
+
+  .dialog.dialog-small {
+    width: 100%;
   }
 
   .list-person .person-avatar,

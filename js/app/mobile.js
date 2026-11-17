@@ -445,6 +445,31 @@ newBtn.addEventListener('click', function (e) {
 }, true);
 
 // ---------------------------------------------------------------------------------------------
+// Dropdowns (home Sort, list filters) as pills: the pill shows the choice at the app's size,
+// with the dropdown itself over it, unseen, so a tap opens the phone's picker. The dropdown
+// keeps its 16px text, so the phone doesn't zoom in on it.
+function pillSelects() {
+  if (!isMobile()) return;
+  Array.prototype.forEach.call(document.querySelectorAll('.home-sort select, .toolbar-scroll select'), function (s) {
+    var wrap = s.parentNode;
+    if (!wrap.classList.contains('m-select')) {
+      wrap = document.createElement('span');
+      wrap.className = 'm-select';
+      s.parentNode.insertBefore(wrap, s);
+      wrap.appendChild(s);
+      var label = document.createElement('span');
+      label.className = 'm-select-label';
+      label.setAttribute('aria-hidden', 'true');
+      wrap.appendChild(label);
+    }
+    wrap.querySelector('.m-select-label').textContent = s.selectedIndex >= 0 ? s.options[s.selectedIndex].text : '';
+  });
+}
+document.addEventListener('change', function (e) {
+  if (e.target.closest && e.target.closest('.m-select')) pillSelects();
+});
+
+// ---------------------------------------------------------------------------------------------
 // A tap off an open popup or menu only closes it: the tap doesn't also open or press whatever
 // it landed on (a project card, an item, a tab). Searching is the exception: tapping back into
 // the search box keeps its results open.
@@ -593,6 +618,16 @@ renderBoard = function () {
   baseRenderBoard();
   if (isMobile()) renderBoardJump();
 };
+var baseRenderHome = renderHome;
+renderHome = function () {
+  baseRenderHome();
+  pillSelects();
+};
+var baseRenderList = renderList;
+renderList = function () {
+  baseRenderList();
+  pillSelects();
+};
 
 // Turning the phone, or resizing the window across the line, redraws for the new layout.
 function onLayoutChange() {
@@ -604,6 +639,7 @@ function onLayoutChange() {
   renderMobile();
   decorateCal();
   renderBoardJump();
+  pillSelects();
 }
 if (MOBILE_MQ.addEventListener) MOBILE_MQ.addEventListener('change', onLayoutChange);
 else MOBILE_MQ.addListener(onLayoutChange);
