@@ -445,6 +445,51 @@ newBtn.addEventListener('click', function (e) {
 }, true);
 
 // ---------------------------------------------------------------------------------------------
+// A tap off an open popup or menu only closes it: the tap doesn't also open or press whatever
+// it landed on (a project card, an item, a tab). Searching is the exception: tapping back into
+// the search box keeps its results open.
+var tapCloses = false;
+
+function popupsOpen(target) {
+  var open = [notesPop, profPop, projPop, tagPop, actMenu, colsMenu, showMenu, zoomMenu, searchRes].filter(function (p) {
+    return !p.hidden && !p.contains(target);
+  });
+  if (target.closest('[data-search], .home-search')) open = open.filter(function (p) { return p !== searchRes; });
+  if (homeMenu && onHome() && !target.closest('.project-menu')) open.push(homeEl);
+  return open;
+}
+
+function closePopups() {
+  if (!profPop.hidden) openProfile(false);
+  if (!notesPop.hidden) openNotes(false);
+  if (!tagPop.hidden) openTagPop(false);
+  if (!projPop.hidden) openProjPop(false);
+  if (!actMenu.hidden) showActMenu(false);
+  if (!colsMenu.hidden) showColsMenu(false);
+  if (!showMenu.hidden) showShowMenu(false);
+  if (!zoomMenu.hidden) showZoomMenu(false);
+  if (!searchRes.hidden) showResults(false);
+  if (!peek.hidden) closePeek();
+  if (homeMenu) {
+    homeMenu = null;
+    if (onHome()) renderHome();
+  }
+}
+
+document.addEventListener('pointerdown', function (e) {
+  // popupJustClosed: the details sheet, which closes as the finger goes down (js/app/details.js)
+  tapCloses = isMobile() && (popupsOpen(e.target).length > 0 || popupJustClosed);
+}, true);
+window.addEventListener('click', function (e) {
+  if (!tapCloses) return;
+  tapCloses = false;
+  popupJustClosed = false;
+  e.preventDefault();
+  e.stopPropagation();
+  closePopups();
+}, true);
+
+// ---------------------------------------------------------------------------------------------
 // The details sheet: swipe it down to close.
 (function () {
   var start = null;
