@@ -9071,25 +9071,26 @@ button.pill {
     overflow-y: auto;
   }
 
+  /* The title and arrows on top; under them Month/Week and the three kinds to show, which double
+     as the key to the dots on the days. Everything fits the width: nothing scrolls sideways. */
   .cal-toolbar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: 10px 8px;
     padding: 12px 16px 8px;
     border-bottom: 0;
   }
 
   .cal-title {
-    grid-row: 1;
-    grid-column: 1;
+    flex: 1 1 auto;
+    order: 1;
     margin: 0;
     font-size: 20px;
   }
 
   .cal-nav {
-    grid-row: 1;
-    grid-column: 2;
+    order: 2;
   }
 
   .cal-nav .btn,
@@ -9101,21 +9102,34 @@ button.pill {
     width: 34px;
   }
 
+  .cal-toolbar .segmented {
+    order: 3;
+    flex: none;
+  }
+
+  .cal-toolbar .segmented button {
+    padding: 0 7px;
+  }
+
   .cal-show {
-    grid-row: 2;
-    grid-column: 1;
-    gap: 6px;
+    order: 4;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    gap: 4px;
     min-width: 0;
-    overflow-x: auto;
   }
 
   .cal-show .checkbox {
+    position: relative;
     flex: none;
-    height: 30px;
-    padding: 0 11px;
+    gap: 4px;
+    height: 32px;
+    padding: 0 7px;
     border: 1px solid var(--line-5);
-    border-radius: 15px;
+    border-radius: 7px;
     background: var(--raised);
+    color: var(--text-13);
+    font-size: 12px;
     font-weight: 500;
     white-space: nowrap;
   }
@@ -9123,28 +9137,52 @@ button.pill {
   .cal-show .checkbox:has(input:checked) {
     border-color: var(--accent-line);
     background: var(--accent-surface);
-    color: var(--accent-text-1);
+    color: var(--text-4);
   }
 
+  /* The tick box itself is hidden; the kind's mark shows instead, faded while it's off */
   .cal-show input {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 0;
-    height: 11px;
-    margin: 0 -5px 0 0;
-    background: currentColor;
-    -webkit-mask: var(--icon-check) center / contain no-repeat;
-    mask: var(--icon-check) center / contain no-repeat;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
   }
 
-  .cal-show input:checked {
-    width: 11px;
-    margin: 0;
+  .cal-show .checkbox::before {
+    content: "";
+    flex: none;
+    width: 8px;
+    height: 8px;
+    box-sizing: border-box;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    opacity: .45;
   }
 
-  .cal-toolbar .segmented {
-    grid-row: 2;
-    grid-column: 2;
+  .cal-show .checkbox:has(input:checked)::before {
+    opacity: 1;
+  }
+
+  .cal-show .checkbox:has([data-cal-show="milestone"])::before {
+    border: 0;
+    border-radius: 1.5px;
+    background: var(--milestone);
+    transform: rotate(45deg);
+  }
+
+  .cal-show .checkbox:has([data-cal-show="phase"])::before {
+    border-color: var(--purple-753);
+  }
+
+  .cal-show .checkbox:has(input:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+  }
+
+  /* All seven days of a week fit the width (not the wider scrolling grid of a small screen) */
+  .cal.week .cal-weekdays,
+  .cal.week .cal-grid {
+    min-width: 0;
   }
 
   .segmented button {
@@ -10306,7 +10344,7 @@ button.pill {
   }
 
   .cal-show .checkbox {
-    font-size: 12.5px;
+    font-size: 12px;
   }
 
   .details {
