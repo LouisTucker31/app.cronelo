@@ -125,6 +125,9 @@ function orderedCols() {
 }
 
 function shownCols() {
+  // On a phone each row is a card showing the fields picked there (js/app/mobile.js), so every
+  // column is drawn whatever's hidden on a bigger screen.
+  if (typeof isMobile === 'function' && isMobile()) return LIST_COLS.slice();
   return orderedCols().filter(function (c) { return c.fixed || listState.hidden.indexOf(c.key) < 0; });
 }
 

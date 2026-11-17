@@ -445,12 +445,55 @@ newBtn.addEventListener('click', function (e) {
 }, true);
 
 // ---------------------------------------------------------------------------------------------
+// The list on a phone: each row a card with the fields picked in Fields (kept for the phone,
+// apart from the columns on a bigger screen), and a Sort dropdown with a direction button in
+// place of the column headings.
+var LIST_FIELDS = [['type', 'Type'], ['phase', 'Phase'], ['start', 'Start'], ['end', 'Finish'], ['days', 'Length'],
+  ['progress', 'Progress'], ['status', 'Status'], ['person', 'Person'], ['notes', 'Notes']];
+var listFields = localStore.getJSON('cronelo.mListFields');
+if (!Array.isArray(listFields)) listFields = ['start', 'progress', 'person'];
+var mSort = listEl.querySelector('[data-m-sort]');
+var mSortDir = listEl.querySelector('[data-m-sort-dir]');
+
+function syncListPhone() {
+  listEl.setAttribute('data-fields', listFields.join(' '));
+  mSort.value = listState.sort && mSort.querySelector('option[value="' + listState.sort + '"]') ? listState.sort : '';
+  mSortDir.disabled = !listState.sort;
+  mSortDir.classList.toggle('down', listState.dir < 0);
+  mSortDir.setAttribute('aria-label', listState.dir < 0 ? 'Descending' : 'Ascending');
+}
+
+mSort.addEventListener('change', function () {
+  listState.sort = mSort.value || null;
+  listState.dir = 1;
+  saveList();
+  renderList();
+});
+mSortDir.addEventListener('click', function () {
+  listState.dir = -listState.dir;
+  saveList();
+  renderList();
+});
+
+function openFields() {
+  moreSheet.innerHTML = '<div class="m-handle" aria-hidden="true"></div><div class="m-sheet-head">Fields on each card</div>' +
+    LIST_FIELDS.map(function (f) {
+      return '<button type="button" class="m-sheet-item m-check" role="menuitemcheckbox" aria-checked="' + (listFields.indexOf(f[0]) >= 0) +
+        '" data-field-toggle="' + f[0] + '"><span>' + f[1] + '</span></button>';
+    }).join('') + '<div class="m-sheet-row"><button type="button" class="primary" data-more="done">Done</button></div>';
+  moreSheet.hidden = moreBack.hidden = false;
+  moreSheet.querySelector('button').focus();
+}
+
+listEl.querySelector('[data-m-fields-btn]').addEventListener('click', openFields);
+
+// ---------------------------------------------------------------------------------------------
 // Dropdowns (home Sort, list filters) as pills: the pill shows the choice at the app's size,
 // with the dropdown itself over it, unseen, so a tap opens the phone's picker. The dropdown
 // keeps its 16px text, so the phone doesn't zoom in on it.
 function pillSelects() {
   if (!isMobile()) return;
-  Array.prototype.forEach.call(document.querySelectorAll('.home-sort select, .toolbar-scroll select'), function (s) {
+  Array.prototype.forEach.call(document.querySelectorAll('.home-sort select, .toolbar-scroll select, .m-list-sort select'), function (s) {
     var wrap = s.parentNode;
     if (!wrap.classList.contains('m-select')) {
       wrap = document.createElement('span');
@@ -576,6 +619,15 @@ function openMore(open) {
 moreBtn.addEventListener('click', function () { openMore(moreSheet.hidden); });
 moreBack.addEventListener('click', function () { openMore(false); });
 moreSheet.addEventListener('click', function (e) {
+  var field = e.target.closest('[data-field-toggle]');
+  if (field) { // Fields: tick a field on or off; the sheet stays open for the next
+    var key = field.getAttribute('data-field-toggle');
+    var on = listFields.indexOf(key) < 0;
+    listFields = LIST_FIELDS.map(function (f) { return f[0]; }).filter(function (k) { return k === key ? on : listFields.indexOf(k) >= 0; });
+    localStore.set('cronelo.mListFields', JSON.stringify(listFields));
+    field.setAttribute('aria-checked', String(on));
+    return renderList();
+  }
   var b = e.target.closest('[data-more]');
   if (!b) return;
   var act = b.getAttribute('data-more');
@@ -629,6 +681,7 @@ renderHome = function () {
 var baseRenderList = renderList;
 renderList = function () {
   baseRenderList();
+  if (isMobile()) syncListPhone();
   pillSelects();
 };
 
@@ -636,12 +689,14 @@ renderList = function () {
 function onLayoutChange() {
   if (!isMobile()) {
     openMore(false);
-    baseRenderCal(); // the calendar as a bigger screen draws it
+    baseRenderCal(); // the calendar and list as a bigger screen draws them
+    renderList();
     return;
   }
   renderMobile();
   decorateCal();
   renderBoardJump();
+  renderList(); // cards with the phone's fields
   pillSelects();
 }
 if (MOBILE_MQ.addEventListener) MOBILE_MQ.addEventListener('change', onLayoutChange);

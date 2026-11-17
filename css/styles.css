@@ -8166,7 +8166,9 @@ button.pill {
 .board-jump,
 .m-sheet,
 .m-sheet-back,
-.m-dots {
+.m-dots,
+.m-list-sort,
+.m-fields-btn {
   display: none;
 }
 
@@ -9493,6 +9495,76 @@ button.pill {
     margin-right: auto;
   }
 
+  /* Sort and Fields stand in for the column headings and the Columns menu */
+  .list .list-table thead,
+  .list .menu-wrap {
+    display: none;
+  }
+
+  .m-list-sort {
+    display: flex;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .m-list-sort .m-select-label {
+    max-width: 128px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .list .toolbar .m-sort-dir,
+  .list .toolbar [data-fold-all] {
+    justify-content: center;
+    width: 36px;
+    padding: 0;
+  }
+
+  .m-sort-dir svg {
+    transition: transform .15s ease;
+  }
+
+  .m-sort-dir.down svg {
+    transform: rotate(180deg);
+  }
+
+  .m-sort-dir:disabled {
+    opacity: .4;
+  }
+
+  .list .toolbar [data-fold-all] span {
+    display: none;
+  }
+
+  .m-fields-btn {
+    display: inline-flex;
+  }
+
+  /* Fields: a tick box on the right of each */
+  .m-check::after {
+    content: "";
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-left: auto;
+    box-sizing: border-box;
+    border: 1.5px solid var(--line-6);
+    border-radius: 5px;
+  }
+
+  .m-check[aria-checked="true"]::after {
+    border-color: var(--accent);
+    background: var(--accent) var(--icon-check-white) center / 12px no-repeat;
+  }
+
+  .m-sheet-row .primary {
+    flex: 1;
+    justify-content: center;
+    height: 44px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+
   .list .toolbar .btn {
     height: 36px;
   }
@@ -9606,16 +9678,51 @@ button.pill {
     padding-left: 0;
   }
 
-  .list-table td[data-col="start"],
-  .list-table td[data-col="progress"] {
+  /* Each card shows the fields picked in Fields (data-fields, js/app/mobile.js), in this order,
+     on a line under the name. Notes get a line of their own. */
+  .list[data-fields~="type"] td[data-col="type"],
+  .list[data-fields~="phase"] td[data-col="phase"],
+  .list[data-fields~="start"] td[data-col="start"],
+  .list[data-fields~="end"] td[data-col="end"],
+  .list[data-fields~="days"] td[data-col="days"],
+  .list[data-fields~="progress"] td[data-col="progress"],
+  .list[data-fields~="status"] td[data-col="status"],
+  .list[data-fields~="person"] td[data-col="person"],
+  .list[data-fields~="notes"] td[data-col="notes"] {
     display: block;
+  }
+
+  .list-table td[data-col="start"],
+  .list-table td[data-col="end"],
+  .list-table td[data-col="days"],
+  .list-table td[data-col="progress"] {
     font: 500 12px "JetBrains Mono", monospace;
     color: var(--text-13);
   }
 
+  .list-table td[data-col="type"],
+  .list-table td[data-col="phase"] {
+    font-size: 12.5px;
+    color: var(--text-13);
+  }
+
+  .list[data-fields~="start"] td[data-col="end"]::before {
+    content: "→ ";
+  }
+
   .list-table td[data-col="person"] {
-    display: block;
     margin-left: auto;
+  }
+
+  .list-table td[data-col="notes"] {
+    order: 1;
+    flex: 1 1 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12.5px;
+    color: var(--text-13);
   }
 
   .list-table td .empty-value {
