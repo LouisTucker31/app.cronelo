@@ -8219,7 +8219,7 @@ button.pill {
     border-radius: 16px;
     background: var(--raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237b828b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 10px center / 13px no-repeat;
     color: var(--text-4);
-    font: 500 11.5px Inter, system-ui, sans-serif;
+    font: 500 12.5px Inter, system-ui, sans-serif;
   }
 
   /* Top bar: the logo, Cronelo over the project's name, the tag underneath; search, notes and ⋯
@@ -8264,7 +8264,7 @@ button.pill {
     padding: 0;
     border: 0;
     background: none;
-    font: 500 11px/14px Inter, system-ui, sans-serif;
+    font: 500 12.5px/16px Inter, system-ui, sans-serif;
     color: var(--text-13);
     cursor: pointer;
   }
@@ -8282,7 +8282,7 @@ button.pill {
     max-width: 100%;
     margin: 0 -6px;
     padding: 1px 6px;
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 700;
     letter-spacing: -.01em;
   }
@@ -8461,7 +8461,7 @@ button.pill {
     border: 0;
     background: none;
     color: var(--text-13);
-    font: 500 10.5px Inter, system-ui, sans-serif;
+    font: 500 11.5px Inter, system-ui, sans-serif;
     cursor: pointer;
   }
 
@@ -8503,7 +8503,7 @@ button.pill {
     padding: 12px 16px 96px;
     background: var(--surface);
     color: var(--text-4);
-    font: 400 12px Inter, system-ui, sans-serif;
+    font: 400 14px Inter, system-ui, sans-serif;
     overscroll-behavior: contain;
   }
 
@@ -8536,12 +8536,12 @@ button.pill {
   }
 
   .ag-card-text b {
-    font: 600 15px Inter, system-ui, sans-serif;
+    font: 600 17px Inter, system-ui, sans-serif;
     color: var(--text-1);
   }
 
   .ag-card-text span {
-    font-size: 11px;
+    font-size: 12.5px;
     color: var(--text-13);
   }
 
@@ -8581,7 +8581,7 @@ button.pill {
     padding: 6px 0;
     border: 0;
     background: none;
-    font: 600 11.5px Inter, system-ui, sans-serif;
+    font: 600 12.5px Inter, system-ui, sans-serif;
     color: var(--accent-text-4);
     cursor: pointer;
   }
@@ -8596,7 +8596,7 @@ button.pill {
     border-radius: 8px;
     background: var(--accent);
     color: var(--white);
-    font: 600 11.5px Inter, system-ui, sans-serif;
+    font: 600 12.5px Inter, system-ui, sans-serif;
     cursor: pointer;
   }
 
@@ -8612,7 +8612,7 @@ button.pill {
     margin: 0 -16px;
     padding: 14px 16px 6px;
     background: var(--surface);
-    font: 700 10px "JetBrains Mono", monospace;
+    font: 700 12px "JetBrains Mono", monospace;
     letter-spacing: .08em;
     text-transform: uppercase;
     color: var(--text-13);
@@ -8655,14 +8655,14 @@ button.pill {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font: 700 11.5px Inter, system-ui, sans-serif;
+    font: 700 12px Inter, system-ui, sans-serif;
     letter-spacing: .05em;
     text-transform: uppercase;
     color: var(--phase-text);
   }
 
   .ag-ph-count {
-    font: 500 11px "JetBrains Mono", monospace;
+    font: 500 12px "JetBrains Mono", monospace;
     color: var(--text-13);
   }
 
@@ -8674,7 +8674,7 @@ button.pill {
   }
 
   .ag-ph-span {
-    font: 400 10.5px "JetBrains Mono", monospace;
+    font: 400 12px "JetBrains Mono", monospace;
     color: var(--text-13);
     white-space: nowrap;
   }
@@ -8699,7 +8699,7 @@ button.pill {
   .ag-items::before {
     content: "";
     position: absolute;
-    left: 60px;
+    left: 68px;
     top: 22px;
     bottom: 22px;
     width: 1.5px;
@@ -8709,10 +8709,10 @@ button.pill {
   .ag-item {
     position: relative;
     display: grid;
-    grid-template-columns: 44px 14px minmax(0, 1fr) auto auto;
+    grid-template-columns: 52px 14px minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 0 10px;
-    min-height: 48px;
+    min-height: 54px;
     margin: 0 -8px;
     padding: 6px 8px;
     border-radius: 10px;
@@ -8736,7 +8736,7 @@ button.pill {
   }
 
   .ag-time {
-    font: 500 10.5px "JetBrains Mono", monospace;
+    font: 500 12px "JetBrains Mono", monospace;
     color: var(--text-13);
     white-space: nowrap;
   }
@@ -8752,12 +8752,12 @@ button.pill {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font: 500 13px Inter, system-ui, sans-serif;
+    font: 500 15px Inter, system-ui, sans-serif;
     color: var(--text-1);
   }
 
   .ag-item.sub .ag-name {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-6);
   }
 
@@ -8772,19 +8772,19 @@ button.pill {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 10.5px;
+    font-size: 12.5px;
     color: var(--text-13);
   }
 
   .ag-pct {
-    font: 500 10.5px "JetBrains Mono", monospace;
+    font: 500 12px "JetBrains Mono", monospace;
     color: var(--text-13);
   }
 
   .ag-item .person-avatar {
     width: 24px;
     height: 24px;
-    font-size: 9px;
+    font-size: 10px;
   }
 
   /* An item's mark: a ring in its colour, tinted once started, filled with a tick when done */
@@ -8846,7 +8846,7 @@ button.pill {
     border-radius: 10px;
     background: none;
     color: var(--text-13);
-    font: 500 12px Inter, system-ui, sans-serif;
+    font: 500 14px Inter, system-ui, sans-serif;
     cursor: pointer;
   }
 
@@ -8862,7 +8862,7 @@ button.pill {
     padding: 64px 16px;
     text-align: center;
     color: var(--text-13);
-    font-size: 13px;
+    font-size: 15px;
   }
 
   /* Workload: a card per person */
@@ -8872,12 +8872,12 @@ button.pill {
 
   .pm-head h2 {
     margin: 0;
-    font: 600 17px Inter, system-ui, sans-serif;
+    font: 600 20px Inter, system-ui, sans-serif;
     color: var(--text-1);
   }
 
   .pm-head span {
-    font-size: 11px;
+    font-size: 12.5px;
     color: var(--text-13);
   }
 
@@ -8885,7 +8885,7 @@ button.pill {
     display: flex;
     justify-content: space-between;
     margin: 0 12px 8px 52px;
-    font: 500 10px "JetBrains Mono", monospace;
+    font: 500 12px "JetBrains Mono", monospace;
     color: var(--text-13);
   }
 
@@ -8920,7 +8920,7 @@ button.pill {
   .pm-top .person-avatar {
     width: 30px;
     height: 30px;
-    font-size: 10.5px;
+    font-size: 12.5px;
   }
 
   .pm-who {
@@ -8932,12 +8932,12 @@ button.pill {
   }
 
   .pm-who b {
-    font: 600 13px Inter, system-ui, sans-serif;
+    font: 600 15px Inter, system-ui, sans-serif;
     color: var(--text-1);
   }
 
   .pm-who span {
-    font-size: 11px;
+    font-size: 12.5px;
     color: var(--text-13);
   }
 
@@ -9017,7 +9017,7 @@ button.pill {
 
   .pm-item {
     display: grid;
-    grid-template-columns: auto 14px minmax(0, 1fr) auto;
+    grid-template-columns: auto 14px minmax(0, 1fr);
     align-items: center;
     gap: 0 10px;
     min-height: 40px;
@@ -9028,7 +9028,7 @@ button.pill {
 
   .pm-time {
     min-width: 40px;
-    font: 500 10.5px "JetBrains Mono", monospace;
+    font: 500 12px "JetBrains Mono", monospace;
     color: var(--text-13);
   }
 
@@ -9036,16 +9036,23 @@ button.pill {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font: 500 12.5px Inter, system-ui, sans-serif;
+    font: 500 15px Inter, system-ui, sans-serif;
     color: var(--text-1);
   }
 
+  .pm-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
   .pm-phase {
-    max-width: 96px;
+    max-width: none;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 10.5px;
+    font-size: 12.5px;
     color: var(--text-13);
   }
 
@@ -9068,7 +9075,7 @@ button.pill {
     grid-row: 1;
     grid-column: 1;
     margin: 0;
-    font-size: 17px;
+    font-size: 20px;
   }
 
   .cal-nav {
@@ -9194,7 +9201,7 @@ button.pill {
     height: 30px;
     padding: 0;
     border-radius: 50%;
-    font: 500 12px/30px "JetBrains Mono", monospace;
+    font: 500 14px/30px "JetBrains Mono", monospace;
   }
 
   .cal-day.sel .cal-date {
@@ -9240,12 +9247,12 @@ button.pill {
   }
 
   .cd-head b {
-    font: 600 14px Inter, system-ui, sans-serif;
+    font: 600 16px Inter, system-ui, sans-serif;
     color: var(--text-1);
   }
 
   .cd-head span {
-    font: 400 10.5px "JetBrains Mono", monospace;
+    font: 400 12px "JetBrains Mono", monospace;
     color: var(--text-13);
   }
 
@@ -9275,7 +9282,7 @@ button.pill {
   .cd-time {
     flex: none;
     min-width: 42px;
-    font: 500 10.5px "JetBrains Mono", monospace;
+    font: 500 12px "JetBrains Mono", monospace;
     color: var(--text-13);
   }
 
@@ -9285,19 +9292,19 @@ button.pill {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font: 500 12.5px Inter, system-ui, sans-serif;
+    font: 500 15px Inter, system-ui, sans-serif;
     color: var(--text-1);
   }
 
   .cd-item.k-phase .cd-name {
-    font: 700 11px Inter, system-ui, sans-serif;
+    font: 700 12px Inter, system-ui, sans-serif;
     letter-spacing: .05em;
     text-transform: uppercase;
     color: var(--phase-text);
   }
 
   .cd-count {
-    font: 500 10.5px "JetBrains Mono", monospace;
+    font: 500 12px "JetBrains Mono", monospace;
     color: var(--text-13);
   }
 
@@ -9377,13 +9384,13 @@ button.pill {
     border-radius: 15px;
     background: var(--raised);
     color: var(--text-6);
-    font: 500 11.5px Inter, system-ui, sans-serif;
+    font: 500 12.5px Inter, system-ui, sans-serif;
     white-space: nowrap;
     cursor: pointer;
   }
 
   .chip-jump b {
-    font: 500 10px "JetBrains Mono", monospace;
+    font: 500 12px "JetBrains Mono", monospace;
     color: var(--text-13);
   }
 
@@ -9401,7 +9408,7 @@ button.pill {
   .chip-jump .person-avatar {
     width: 16px;
     height: 16px;
-    font-size: 7.5px;
+    font-size: 8.5px;
   }
 
   .board-scroll {
@@ -9563,7 +9570,7 @@ button.pill {
   }
 
   .list-name {
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .list-row.l-sub {
@@ -9577,7 +9584,7 @@ button.pill {
   .list-table td[data-col="start"],
   .list-table td[data-col="progress"] {
     display: block;
-    font: 500 10.5px "JetBrains Mono", monospace;
+    font: 500 12px "JetBrains Mono", monospace;
     color: var(--text-13);
   }
 
@@ -9598,7 +9605,7 @@ button.pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 11.5px;
+    font-size: 12.5px;
   }
 
   .list-table tr.list-folded {
@@ -9643,7 +9650,7 @@ button.pill {
     border: 0;
     border-radius: 14px 14px 0 0;
     box-shadow: 0 0 0 100vmax rgba(18, 20, 23, .32), 0 -4px 24px var(--shadow);
-    font-size: 13px;
+    font-size: 15px;
     overscroll-behavior: contain;
     animation: m-sheet-in .22s ease-out;
     transition: transform .2s ease;
@@ -9678,11 +9685,11 @@ button.pill {
   }
 
   .details-kind {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .details-title h3 {
-    font-size: 17px;
+    font-size: 20px;
   }
 
   .details .close-btn {
@@ -9741,7 +9748,7 @@ button.pill {
     justify-content: center;
     height: 44px;
     border-radius: 10px;
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .details-foot .btn svg {
@@ -9826,7 +9833,7 @@ button.pill {
     background: var(--raised);
     box-shadow: 0 -8px 32px var(--shadow-strong);
     color: var(--text-4);
-    font: 400 12px Inter, system-ui, sans-serif;
+    font: 400 14px Inter, system-ui, sans-serif;
     animation: m-sheet-in .22s ease-out;
   }
 
@@ -9841,7 +9848,7 @@ button.pill {
     justify-content: center;
     height: 44px;
     border-radius: 10px;
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .m-sheet-row .btn svg {
@@ -9851,7 +9858,7 @@ button.pill {
 
   .m-sheet-head {
     padding: 14px 8px 4px;
-    font: 600 9.5px Inter, sans-serif;
+    font: 600 11px Inter, sans-serif;
     letter-spacing: .06em;
     text-transform: uppercase;
     color: var(--text-faint);
@@ -9867,7 +9874,7 @@ button.pill {
     border-radius: 8px;
     background: none;
     color: var(--text-1);
-    font: 500 13px Inter, system-ui, sans-serif;
+    font: 500 15px Inter, system-ui, sans-serif;
     text-align: left;
     cursor: pointer;
   }
@@ -9881,7 +9888,7 @@ button.pill {
   .m-sheet-item em {
     font-style: normal;
     font-weight: 400;
-    font-size: 11px;
+    font-size: 12.5px;
     color: var(--text-faint);
   }
 
@@ -9925,7 +9932,7 @@ button.pill {
   }
 
   .home-brand-name {
-    font: 700 17px Inter, system-ui, sans-serif;
+    font: 700 20px Inter, system-ui, sans-serif;
     letter-spacing: -.01em;
   }
 
@@ -9950,7 +9957,7 @@ button.pill {
   .home-tools .avatar.home-avatar {
     width: 38px;
     height: 38px;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .home-search {
@@ -9996,7 +10003,7 @@ button.pill {
   }
 
   .home-hello h1 {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   /* Grid or list, sort and the filters: one row that scrolls sideways */
@@ -10066,15 +10073,194 @@ button.pill {
     padding: 0 14px;
     border-width: 1.5px;
     border-color: var(--line-5);
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .project-add span {
-    font-size: 18px;
+    font-size: 20px;
   }
 
   .home-box {
     border-radius: 10px;
+  }
+
+  /* The phone type scale, for what's shared with bigger screens: names 15px, body 14px,
+     secondary text 12.5px (12px in mono), small headings 11px, titles 20px; fields stay 16px */
+  .btn,
+  .primary,
+  .clear-filters,
+  .board-col-add,
+  .board-col-empty,
+  .dropdown button,
+  .search-result {
+    font-size: 13px;
+  }
+
+  .segmented button {
+    height: 28px;
+    font-size: 12.5px;
+  }
+
+  .pill {
+    height: 22px;
+    font-size: 11px;
+  }
+
+  .status,
+  .project-status {
+    height: 22px;
+    padding: 0 9px;
+    font-size: 12px;
+  }
+
+  .item-count,
+  .toolbar-label,
+  .sort-btn {
+    font-size: 11px;
+  }
+
+  .item-count {
+    font-size: 12px;
+  }
+
+  .list-row.l-ph .list-name,
+  .list.flat .list-row.l-ph .list-name {
+    font-size: 12px;
+  }
+
+  .list.flat .list-row.l-ph .list-name {
+    font-size: 15px;
+  }
+
+  .list-row.l-sub .list-name {
+    font-size: 14px;
+  }
+
+  .list-pct {
+    font-size: 12px;
+  }
+
+  .card {
+    gap: 6px;
+  }
+
+  .card-name {
+    font-size: 15px;
+  }
+
+  .card.sub .card-name {
+    font-size: 14px;
+  }
+
+  .card-phase,
+  .board-col-title {
+    font-size: 11px;
+  }
+
+  .card-date,
+  .board-col-count {
+    font-size: 12px;
+  }
+
+  .card-parent {
+    font-size: 12.5px;
+  }
+
+  .cal-weekdays span {
+    font-size: 11px;
+  }
+
+  .cal-show .checkbox {
+    font-size: 12.5px;
+  }
+
+  .details {
+    font-size: 14px;
+  }
+
+  .details-title h3 {
+    font-size: 20px;
+  }
+
+  .dialog,
+  .notes-popup,
+  .profile-popup,
+  .popup,
+  .search-results {
+    font-size: 14px;
+  }
+
+  .dialog-head h2 {
+    font-size: 20px;
+  }
+
+  .field-label {
+    font-size: 12.5px;
+  }
+
+  .chip,
+  .kind label,
+  .dialog .checkbox {
+    font-size: 13px;
+  }
+
+  .home-hello p {
+    font-size: 14px;
+  }
+
+  .project-card h3,
+  .home-grid.as-list h3 {
+    font-size: 17px;
+  }
+
+  .project-dates,
+  .coming-up-time {
+    font-size: 12px;
+  }
+
+  .project-counts,
+  .project-next-when,
+  .project-current,
+  .coming-up-project,
+  .coming-day-head em {
+    font-size: 12.5px;
+  }
+
+  .project-next-name,
+  .coming-up-name,
+  .home-notes li,
+  .home-list li {
+    font-size: 14px;
+  }
+
+  .coming-day-head b {
+    font-size: 14px;
+  }
+
+  .home-label,
+  .home-box h2 {
+    font-size: 11px;
+  }
+
+  .project-desc,
+  .project-next {
+    font-size: 14px;
+  }
+
+  .list-person .person-avatar,
+  .card-person .person-avatar {
+    width: 22px;
+    height: 22px;
+    font-size: 9px;
+  }
+
+  /* The task form's dates at the phone's 16px: Start and Finish a row each, date beside time */
+  .when {
+    grid-template-columns: 1fr;
+  }
+
+  .date-time input[type=time] {
+    flex: 0 0 42%;
   }
 
   [data-theme="dark"] .details {

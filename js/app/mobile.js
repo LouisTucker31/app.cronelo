@@ -249,7 +249,7 @@ function renderPeopleM() {
       var s = startDay(r);
       return '<div class="pm-item' + (r.type === 'task' && r.progress >= 1 ? ' done' : '') + '" data-id="' + esc(r.id) + '" role="button" tabindex="0">' +
         '<span class="pm-time">' + (oneDay ? (s % 1 ? timeOf(s) : 'All day') : listDate(s)) + '</span>' + markHtml(r) +
-        '<span class="pm-name">' + esc(r.name) + '</span><span class="pm-phase">' + esc(phaseName(r)) + '</span></div>';
+        '<span class="pm-main"><span class="pm-name">' + esc(r.name) + '</span>' + (phaseName(r) ? '<span class="pm-phase">' + esc(phaseName(r)) + '</span>' : '') + '</span></div>';
     }).join('') + '</div>' : '';
     var tip = state === 'over' ? 'Overlapping tasks' : state === 'ok' ? 'No overlapping tasks' : 'Nothing assigned';
     return '<section class="pm-card' + (o.p ? '' : ' none') + (isOpen ? ' open' : '') + '"' + (o.p ? ' style="--c: ' + safeColor(o.p.color, AVATAR_COLORS[0]) + '"' : '') + '>' +
