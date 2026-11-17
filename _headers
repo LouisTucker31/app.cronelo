@@ -8,3 +8,11 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
   X-Frame-Options: DENY
   X-Robots-Tag: noindex
+
+# The app's styles and scripts: checked with the server on every load (a quick "not modified"
+# when unchanged), so an update shows straight away instead of after a kept copy expires.
+/css/*
+  Cache-Control: no-cache
+
+/js/*
+  Cache-Control: no-cache

@@ -225,6 +225,12 @@
   // what an earlier one set up.
   var APP_FILES = ['core', 'timeline', 'timeline-controls', 'plan', 'task-form', 'task-list', 'details', 'list', 'board',
     'calendar', 'settings', 'pages', 'tags', 'search', 'projects', 'notes', 'profile', 'home', 'mobile', 'start'];
+  // The ?v= index.html loads this file with, passed on to the app's files, so a new version
+  // there makes every browser fetch them afresh rather than use a copy it kept.
+  var VERSION = (/[?&]v=([\w.-]+)/.exec((document.currentScript || {}).src || '') || [])[1];
+  function appSrc(name) {
+    return '/js/app/' + name + '.js' + (VERSION ? '?v=' + VERSION : '');
+  }
 
   // Signed in: fetch the app's files while the first sync runs, so they're ready when it ends.
   var preloaded = false;
@@ -235,7 +241,7 @@
       var link = document.createElement('link');
       link.rel = 'preload';
       link.as = 'script';
-      link.href = '/js/app/' + name + '.js';
+      link.href = appSrc(name);
       document.head.appendChild(link);
     });
   }
@@ -260,7 +266,7 @@
     HELD.forEach(function (type) { window.addEventListener(type, hold, true); });
     APP_FILES.forEach(function (name, i) {
       var s = document.createElement('script');
-      s.src = '/js/app/' + name + '.js';
+      s.src = appSrc(name);
       s.async = false; // run in list order
       if (i === APP_FILES.length - 1) {
         // Reveal the app (and drop the loading screen) only once it has drawn itself.

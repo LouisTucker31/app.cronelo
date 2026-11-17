@@ -8195,6 +8195,33 @@ button.pill {
     min-height: 0;
   }
 
+  /* Nothing scrolls the page sideways: only the rows meant to (chips, the board) do */
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .app,
+  .home {
+    overflow-x: clip;
+  }
+
+  /* Dropdowns as the app's pills, with its own chevron; tapped, they open the phone's picker */
+  .home-sort select,
+  .toolbar-scroll select,
+  [data-theme="dark"] .home-sort select,
+  [data-theme="dark"] .toolbar-scroll select {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 32px;
+    padding: 0 30px 0 12px;
+    border: 1px solid var(--line-5);
+    border-radius: 16px;
+    background: var(--raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237b828b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 10px center / 13px no-repeat;
+    color: var(--text-4);
+    font: 500 11.5px Inter, system-ui, sans-serif;
+  }
+
   /* Top bar: the logo, Cronelo over the project's name, the tag underneath; search, notes and ⋯
      on the right */
   .top {
@@ -9424,9 +9451,6 @@ button.pill {
   .toolbar-scroll select {
     flex: none;
     max-width: none;
-    height: 32px;
-    padding: 0 10px;
-    border-radius: 16px;
   }
 
   .toolbar-scroll .clear-filters {
@@ -9988,14 +10012,8 @@ button.pill {
     flex: none;
   }
 
-  .home-sort select,
   .home-bar .btn {
     height: 32px;
-  }
-
-  .home-sort select {
-    padding: 0 10px;
-    border-radius: 16px;
   }
 
   .home-filter {

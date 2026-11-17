@@ -46,6 +46,11 @@ The pages also set the Content-Security-Policy and Referrer-Policy with `<meta>`
 `js/early.js` hides the page inside another site's frame, as a second line of defence. Keep the
 `<meta>` policy in `index.html` and the header in `_headers` in step.
 
+Updates and browser caching: `_headers` has browsers check `/css/*` and `/js/*` with the server on
+every load. As a backstop, `index.html` loads its styles and scripts with a `?v=` version
+(`js/cloud.js` passes the same one on to `js/app/*.js`); change it in `index.html` (every `?v=`
+there) and every browser fetches the files afresh, whatever it kept.
+
 After any hosting change, check the live headers with https://securityheaders.com or Mozilla's
 HTTP Observatory.
 
