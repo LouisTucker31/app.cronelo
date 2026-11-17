@@ -1213,7 +1213,7 @@ button.name:focus-visible {
 
 /* On the chart label the chevron follows the name, and shows only while its row is hovered */
 .phase .fold-btn {
-  margin: 0 0 0 3px;
+  margin: 0 0 0 -2px;
   opacity: 0;
   pointer-events: none;
   transition: opacity .12s ease;
