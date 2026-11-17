@@ -1422,6 +1422,7 @@ button.name:focus-visible {
 }
 
 .details-icon.phase {
+  position: static; /* not placed like the timeline's .phase labels */
   border-radius: 50%;
   background: var(--raised);
   border: 1.5px solid var(--c, #c7c1ec);
@@ -9685,9 +9686,11 @@ button.pill {
     margin: 0 2px;
   }
 
-  .details-icon.phase {
+  .details-icon.phase,
+  [data-theme="dark"] .details-icon.phase {
     width: 16px;
     height: 16px;
+    border: 2px solid var(--c, var(--purple-753));
   }
 
   .details-kind {
