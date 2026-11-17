@@ -10302,6 +10302,15 @@ button.pill {
     height: 30px;
   }
 
+  /* Sort: just the dropdown beside Grid/List, shaped like it */
+  .home-sort .toolbar-label {
+    display: none;
+  }
+
+  .home-sort .m-select-label {
+    border-radius: 7px;
+  }
+
   .home-filter {
     height: 36px;
     border-radius: 18px;
