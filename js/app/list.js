@@ -233,7 +233,7 @@ function renderList() {
     var style = r.type === 'phase' && r.color ? colorVar(r).slice(2) :
       r.type === 'task' && r.progress > 0 ? '--p: ' + Math.min(1, r.progress) : '';
     return '<tr class="' + cls + '" data-id="' + esc(r.id) + '" tabindex="0" title="Click to edit"' + (style ? ' style="' + style + '"' : '') + '>' + cols.map(function (c) {
-      return '<td class="' + (c.key === 'name' ? 'name-col' : '') + (c.mono ? ' mono' : '') + (c.right ? ' r' : '') + '">' + c.cell(r) + '</td>';
+      return '<td class="' + (c.key === 'name' ? 'name-col' : '') + (c.mono ? ' mono' : '') + (c.right ? ' r' : '') + '" data-col="' + c.key + '">' + c.cell(r) + '</td>';
     }).join('') + '</tr>';
   }).join('');
   if (!data.rows.length) {

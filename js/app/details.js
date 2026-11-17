@@ -111,6 +111,7 @@ peek.querySelector('[data-peek-done]').addEventListener('click', function () {
   savePlan();
   // Open it again where it was, showing the new progress, with the focus back on the button.
   var el = scroller.querySelector('.plan [data-id="' + CSS.escape(id) + '"]');
+  if (!el && isMobile()) el = peek; // a sheet on a phone: it opens in the same place whatever the item
   if (!el) return;
   openPeek(id, el, at.left + 24);
   peek.style.left = at.left + 'px';
@@ -157,7 +158,9 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape' && !peek.hidden && !move) closePeek();
 });
 scroller.addEventListener('wheel', function () { if (!peek.hidden) closePeek(); }, { passive: true });
-window.addEventListener('resize', function () { if (!peek.hidden) closePeek(); });
+// On a phone it's a sheet along the bottom, which the address bar or keyboard coming and going
+// (both resize the window) doesn't move, so it stays open.
+window.addEventListener('resize', function () { if (!peek.hidden && !isMobile()) closePeek(); });
 
 // Click a bar, milestone or phase label in the chart to see its details, or empty space
 // to add something at that time. A drag that moved the chart doesn't count as a click.

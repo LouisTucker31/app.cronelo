@@ -34,6 +34,7 @@
 
 <header class="top">
 <nav class="breadcrumb" aria-label="Breadcrumb">
+<button class="m-logo" type="button" aria-label="Cronelo: all your projects" data-go-home><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M22.3 10.7A7.5 7.5 0 1 0 22.3 21.3" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
 <button class="crumb-home" type="button" title="Back to Cronelo: all your projects" data-go-home>Cronelo</button><span class="sep">/</span><div class="project-wrap"><button class="name" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="proj-pop" title="Switch, rename or create projects" data-project-btn></button><div class="popup project-popup" id="proj-pop" role="dialog" aria-label="Projects" hidden data-project-pop></div></div>
 <div class="tag-wrap"><button class="pill" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="tag-pop" data-tag-btn></button><div class="popup" id="tag-pop" role="dialog" aria-label="Project tag" hidden data-tag-pop></div></div>
 </nav>
@@ -53,6 +54,7 @@
 <button type="button" role="menuitem" class="danger" data-act="reset">Reset project…<em>Remove every item</em></button>
 </div></div>
 <div class="stack" hidden data-people-stack></div>
+<button class="btn m-more-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="m-more" aria-label="More" data-m-more-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
 <button class="primary" type="button" aria-haspopup="dialog" data-new-task><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>New task</button>
 </div>
 </header>
@@ -104,11 +106,13 @@
 <section class="list" aria-label="List" data-list>
 <div class="toolbar">
 <label class="list-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><input type="search" placeholder="Filter by name" aria-label="Filter by name" autocomplete="off" data-lf="q"></label>
+<div class="toolbar-scroll">
 <select aria-label="Type" data-lf="type"><option value="">All types</option><option value="task">Tasks</option><option value="milestone">Milestones</option><option value="phase">Phases</option></select>
 <select aria-label="Status" data-lf="status"><option value="">Any status</option><option value="open">Not started</option><option value="active">In progress</option><option value="done">Done</option></select>
 <select aria-label="Phase" data-lf="phase"></select>
 <select aria-label="Person" data-lf="person"></select>
 <button class="clear-filters" type="button" hidden data-lf-clear>Clear filters</button>
+</div>
 <span class="item-count" data-list-count></span>
 <button class="btn" type="button" hidden data-fold-all><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 20 5-5 5 5"></path><path d="m7 4 5 5 5-5"></path></svg><span>Collapse all</span></button>
 <div class="menu-wrap">
@@ -143,6 +147,7 @@
 <div class="segmented" role="group" aria-label="Calendar view"><button type="button" data-cal-view="month">Month</button><button type="button" data-cal-view="week">Week</button></div>
 </div>
 <div class="cal-grid-wrap"><div class="cal-weekdays" aria-hidden="true" data-cal-days></div><div class="cal-grid" data-cal-grid></div></div>
+<div class="cal-daylist" data-cal-daylist></div>
 </section>
 
 <!-- Board view: the plan as a kanban, laid over the timeline. Columns and cards are filled in by js/app/board.js -->
@@ -159,8 +164,14 @@
 <div class="dropdown check-menu" id="show-menu" hidden data-show-menu></div>
 </div>
 </div>
+<div class="board-jump" aria-label="Go to column" data-board-jump></div>
 <div class="board-scroll"><div class="board-columns" data-board-cols></div></div>
 </section>
+
+<!-- Phones: the timeline as an agenda (turn the phone sideways for the chart) and the workload as
+     people cards, laid over the timeline like the pages above. Filled in by js/app/mobile.js -->
+<section class="agenda" aria-label="Timeline" data-agenda></section>
+<section class="people-m" aria-label="Workload" data-people-m></section>
 </main>
 
 <footer class="status-bar">
@@ -178,6 +189,15 @@
 </div>
 </div>
 </footer>
+
+<!-- Phones: the views as a tab bar along the bottom, in place of the rail -->
+<nav class="m-tabs" aria-label="Views">
+<button type="button" data-page-btn="timeline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6h8"></path><path d="M12 16h6"></path><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="M8 11h7"></path></svg><span>Timeline</span></button>
+<button type="button" data-page-btn="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg><span>List</span></button>
+<button type="button" data-page-btn="calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3"></path><path d="M16 2v3"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path></svg><span>Calendar</span></button>
+<button type="button" data-page-btn="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M8 7v7"></path><path d="M12 7v4"></path><path d="M16 7v9"></path></svg><span>Board</span></button>
+<button type="button" data-page-btn="workload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg><span>Workload</span></button>
+</nav>
 
 <!-- Cronelo: the home page above the projects. Filled in by js/app/home.js -->
 <section class="home" aria-label="Cronelo" hidden data-home></section>
@@ -256,6 +276,11 @@
 <dl class="details-body" data-peek-body></dl>
 <div class="details-foot"><button class="btn" type="button" data-peek-move="-1" aria-label="Move up" title="Move up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"></path></svg></button><button class="btn" type="button" data-peek-move="1" aria-label="Move down" title="Move down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><button class="btn" type="button" aria-pressed="false" data-peek-done><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Complete</span></button><button class="btn" type="button" data-peek-edit><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg>Edit</button></div>
 </div>
+
+<!-- Phones: the ⋯ in the top bar opens this sheet of what the top bar and rail hold on bigger
+     screens (undo, the project's actions, settings, profile, theme). Filled in by js/app/mobile.js -->
+<div class="m-sheet-back" hidden data-m-back></div>
+<div class="m-sheet" id="m-more" role="dialog" aria-label="More" hidden data-m-more></div>
 
 <script src="/js/shared.js"></script>
 <script src="/js/data.js"></script>

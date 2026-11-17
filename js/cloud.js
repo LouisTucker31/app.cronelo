@@ -224,7 +224,7 @@
   // The app's files, in the order they run. They share one scope, so a later file can use
   // what an earlier one set up.
   var APP_FILES = ['core', 'timeline', 'timeline-controls', 'plan', 'task-form', 'task-list', 'details', 'list', 'board',
-    'calendar', 'settings', 'pages', 'tags', 'search', 'projects', 'notes', 'profile', 'home', 'start'];
+    'calendar', 'settings', 'pages', 'tags', 'search', 'projects', 'notes', 'profile', 'home', 'mobile', 'start'];
 
   // Signed in: fetch the app's files while the first sync runs, so they're ready when it ends.
   var preloaded = false;
