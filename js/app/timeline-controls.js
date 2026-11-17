@@ -15,6 +15,24 @@ function renderStats() {
     document.querySelector('[data-stat="' + key + '"]').innerHTML = '<b>' + n + '</b> ' + words[key][n === 1 ? 0 : 1];
   });
 
+  // Project progress: the average of every task, the same way a phase averages its own.
+  // A ring that fills and shifts from amber to green, its percentage, and a status tag.
+  var tasks = data.rows.filter(function (r) { return r.type === 'task'; });
+  var prog = document.querySelector('[data-project-progress]');
+  prog.hidden = document.querySelector('[data-progress-dot]').hidden = !tasks.length;
+  if (tasks.length) {
+    var p = tasks.reduce(function (sum, r) { return sum + Math.min(1, Math.max(0, r.progress || 0)); }, 0) / tasks.length;
+    var pct = Math.round(p * 100);
+    if (pct === 100 && p < 1) pct = 99; // only "100%" once every task is finished
+    var state = p >= 1 ? ['done', 'Complete'] : p > 0 ? ['active', 'In progress'] : ['open', 'Not started'];
+    prog.style.setProperty('--p', p);
+    prog.setAttribute('aria-label', 'Project progress: ' + pct + '%, ' + state[1].toLowerCase());
+    prog.innerHTML = '<svg class="progress-ring" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">' +
+      '<circle class="track" cx="8" cy="8" r="6.5"></circle>' +
+      (p > 0 ? '<circle class="fill" cx="8" cy="8" r="6.5" pathLength="100" stroke-dasharray="' + (p * 100) + ' 100"></circle>' : '') + '</svg>' +
+      '<b>' + pct + '%</b><span class="status ' + state[0] + '">' + state[1] + '</span>';
+  }
+
   // The people in the top bar: the first four as avatars, then "+n" for the rest.
   // Hidden until someone has been added.
   var stack = document.querySelector('[data-people-stack]');

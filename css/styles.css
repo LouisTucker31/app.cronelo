@@ -1568,6 +1568,44 @@ button.name:focus-visible {
   color: var(--grey-714);
 }
 
+/* Project progress in the footer: a hollow ring that fills clockwise from the top and shifts
+   from the milestone amber to the Done green as --p (0 to 1) rises, then a % and status tag. */
+.project-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.project-progress[hidden] {
+  display: none;
+}
+
+.progress-ring {
+  flex: none;
+  transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+  fill: none;
+  stroke-width: 2.5;
+}
+
+.progress-ring .track {
+  stroke: var(--surface-10);
+}
+
+.progress-ring .fill {
+  stroke: color-mix(in srgb, var(--success) calc(var(--p) * 100%), var(--milestone));
+  stroke-linecap: round;
+  transition: stroke-dasharray .3s ease, stroke .3s ease;
+}
+
+.project-progress .status {
+  height: 17px;
+  padding: 0 7px;
+  font-size: 10px;
+}
+
 .status-bar .r {
   display: flex;
   gap: 10px;
