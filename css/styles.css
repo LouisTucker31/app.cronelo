@@ -8301,7 +8301,7 @@ button.pill {
   }
 
   /* Search: a button until tapped, then a box across the top bar */
-  .search {
+  .top .search {
     order: -1;
     position: relative;
     justify-content: center;
@@ -8311,20 +8311,20 @@ button.pill {
     border-radius: 10px;
   }
 
-  .search svg {
+  .top .search svg {
     width: 16px;
     height: 16px;
   }
 
-  .search input,
-  .search:focus-within input {
+  .top .search input,
+  .top .search:focus-within input {
     position: absolute;
     inset: 0;
     width: 100%;
     opacity: 0;
   }
 
-  .search:focus-within {
+  .top .search:focus-within {
     position: absolute;
     z-index: 26;
     top: 12px;
@@ -8335,14 +8335,14 @@ button.pill {
     padding: 0 12px;
   }
 
-  .search:focus-within input {
+  .top .search:focus-within input {
     position: static;
     flex: 1;
     width: auto;
     opacity: 1;
   }
 
-  .search-results {
+  .top .search-results {
     left: 0;
     right: 0;
   }
@@ -9867,6 +9867,196 @@ button.pill {
 
   .m-sheet-item.danger {
     color: var(--danger-text-2);
+  }
+
+  /* Cronelo, the home page: the same top bar as a project (logo and name, notes and your
+     profile), the project search across the width under it, and New project as the + button */
+  .home {
+    background: var(--surface);
+  }
+
+  .home-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 10px 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-1);
+  }
+
+  .home-brand {
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .home-brand .logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .home-brand .logo svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .home-brand-name {
+    font: 700 17px Inter, system-ui, sans-serif;
+    letter-spacing: -.01em;
+  }
+
+  .home-tools {
+    display: contents;
+  }
+
+  .home-tools [data-home-notes] {
+    position: relative;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 10px;
+  }
+
+  .home-tools [data-home-notes] svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .home-tools .avatar.home-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 12px;
+  }
+
+  .home-search {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .home-search input,
+  .home-search:focus-within input {
+    flex: 1;
+    width: auto;
+  }
+
+  .home-tools [data-home-new] {
+    position: fixed;
+    z-index: 20;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    gap: 0;
+    border-radius: 14px;
+    font-size: 0;
+    box-shadow: 0 8px 24px var(--shade-18), 0 2px 6px var(--shade-08);
+  }
+
+  .home-tools [data-home-new] svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .home-wrap {
+    gap: 0;
+    padding: 16px 16px 96px;
+  }
+
+  .home-side {
+    margin-top: 20px;
+  }
+
+  .home-hello h1 {
+    font-size: 20px;
+  }
+
+  /* Grid or list, sort and the filters: one row that scrolls sideways */
+  .home-bar {
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin: 14px -16px 18px;
+    padding: 0 16px;
+    overflow-x: auto;
+  }
+
+  .home-bar > * {
+    flex: none;
+  }
+
+  .home-sort select,
+  .home-bar .btn {
+    height: 32px;
+  }
+
+  .home-sort select {
+    padding: 0 10px;
+    border-radius: 16px;
+  }
+
+  .home-filter {
+    height: 32px;
+    border-radius: 16px;
+  }
+
+  .home-label {
+    margin-bottom: 8px;
+  }
+
+  .home-grid {
+    gap: 10px;
+  }
+
+  .project-card {
+    padding: 14px;
+    border-radius: 10px;
+  }
+
+  .project-card:active {
+    background: var(--surface-6);
+  }
+
+  .home-grid:not(.as-list) .project-menu-btn {
+    width: 32px;
+    height: 32px;
+    margin: -6px -6px -6px auto;
+  }
+
+  .home-grid.as-list .project-card {
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .home-grid.as-list .project-menu-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+  }
+
+  .project-add {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 14px;
+    border-width: 1.5px;
+    border-color: var(--line-5);
+    font-size: 12px;
+  }
+
+  .project-add span {
+    font-size: 18px;
+  }
+
+  .home-box {
+    border-radius: 10px;
   }
 
   [data-theme="dark"] .details {
