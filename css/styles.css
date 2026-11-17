@@ -9452,24 +9452,42 @@ button.pill {
     flex: 1;
     width: auto;
   }
-
+  /* The list filters: four across, one row the width of the screen */
   .toolbar-scroll {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     flex: 1 1 100%;
     gap: 6px;
-    margin: 0 -16px;
-    padding: 0 16px;
-    overflow-x: auto;
   }
 
-  .toolbar-scroll select {
-    flex: none;
-    max-width: none;
+  .toolbar-scroll .m-select,
+  .toolbar-scroll .m-select-label {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .toolbar-scroll .m-select-label {
+    display: block;
+    line-height: 34px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 26px 0 11px;
+    background-position: right 8px center;
+  }
+
+  .toolbar-scroll .m-select.set .m-select-label {
+    border-color: var(--accent-line);
+    background-color: var(--accent-surface);
+    color: var(--accent-text-1);
   }
 
   .toolbar-scroll .clear-filters {
-    flex: none;
+    grid-column: 1 / -1;
+    justify-self: start;
+    height: 28px;
   }
+
 
   .list .item-count {
     margin-right: auto;
@@ -9545,7 +9563,7 @@ button.pill {
     min-width: 0;
     height: auto;
     padding: 0;
-    border: 0;
+    border: 0 !important;
     background: none !important;
     animation: none !important;
   }
@@ -10307,7 +10325,7 @@ button.pill {
     height: 36px;
     padding: 0 32px 0 13px;
     border: 1px solid var(--line-5);
-    border-radius: 18px;
+    border-radius: 7px;
     background: var(--raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237b828b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 11px center / 13px no-repeat;
     color: var(--text-4);
     font: 500 13px Inter, system-ui, sans-serif;

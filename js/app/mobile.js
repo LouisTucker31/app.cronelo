@@ -462,7 +462,10 @@ function pillSelects() {
       label.setAttribute('aria-hidden', 'true');
       wrap.appendChild(label);
     }
-    wrap.querySelector('.m-select-label').textContent = s.selectedIndex >= 0 ? s.options[s.selectedIndex].text : '';
+    // Unset, a list filter shows just what it filters by (its label: Type, Status, Phase, Person)
+    var unset = !s.value && s.closest('.toolbar-scroll');
+    wrap.querySelector('.m-select-label').textContent = unset ? s.getAttribute('aria-label') : s.selectedIndex >= 0 ? s.options[s.selectedIndex].text : '';
+    wrap.classList.toggle('set', !unset && !!s.closest('.toolbar-scroll'));
   });
 }
 document.addEventListener('change', function (e) {
