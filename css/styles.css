@@ -10121,6 +10121,186 @@ button.pill {
     color: var(--danger-text-2);
   }
 
+  /* The ⋯ sheet: a header like an item's details, then cards of rows, each with an icon on a
+     soft tile; Reset on its own in red at the end */
+  .m-sheet-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 4px 6px;
+  }
+
+  .m-sheet-top h3 {
+    margin: 2px 0 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 600 20px Inter, system-ui, sans-serif;
+    color: var(--text-1);
+  }
+
+  .m-sheet-top .close-btn {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid var(--line-5);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-15);
+    cursor: pointer;
+  }
+
+  .m-sheet-top .close-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .m-sheet .m-sheet-head {
+    padding: 16px 4px 6px;
+  }
+
+  .m-card {
+    overflow: hidden;
+    border: 1px solid var(--line-4);
+    border-radius: 10px;
+    background: var(--raised);
+  }
+
+  .m-card.danger {
+    margin-top: 16px;
+  }
+
+  .m-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 56px;
+    padding: 8px 12px;
+    border: 0;
+    background: none;
+    color: var(--text-1);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .m-row + .m-row {
+    border-top: 1px solid var(--line-1);
+  }
+
+  .m-row:active {
+    background: var(--surface-6);
+  }
+
+  .m-ico {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--surface-6);
+    color: var(--text-6);
+    font-style: normal;
+  }
+
+  .m-ico svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .m-ico.m-face {
+    border-radius: 50%;
+    color: var(--white);
+    font: 600 12px Inter, system-ui, sans-serif;
+  }
+
+  .m-ico.logo-tile {
+    background: var(--text-1);
+    color: var(--on-strong);
+  }
+
+  .m-ico.logo-tile svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .m-row-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .m-row-text b {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 500 15px Inter, system-ui, sans-serif;
+  }
+
+  .m-row-text em {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-style: normal;
+    font-size: 12.5px;
+    color: var(--text-faint);
+  }
+
+  .m-row-end svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+    color: var(--text-13);
+  }
+
+  .m-card.danger .m-row-text b,
+  .m-card.danger .m-ico {
+    color: var(--danger-text-2);
+  }
+
+  .m-card.danger .m-ico {
+    background: var(--danger-surface);
+  }
+
+  /* An on/off switch: Cronelo blue with the knob to the right when on */
+  .m-switch {
+    flex: none;
+    position: relative;
+    width: 42px;
+    height: 26px;
+    border-radius: 13px;
+    background: var(--line-5);
+    transition: background .15s ease;
+  }
+
+  .m-switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: 0 1px 3px var(--shade-18);
+    transition: transform .15s ease;
+  }
+
+  [aria-checked="true"] > .m-switch {
+    background: var(--accent);
+  }
+
+  [aria-checked="true"] > .m-switch::after {
+    transform: translateX(16px);
+  }
+
   /* Cronelo, the home page: the same top bar as a project (logo and name, notes and your
      profile), the project search across the width under it, and New project as the + button */
   .home {

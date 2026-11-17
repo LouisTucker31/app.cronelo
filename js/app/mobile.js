@@ -634,27 +634,50 @@ swipeToClose(actDialog, function () { actDialog.close(); });
 
 // ---------------------------------------------------------------------------------------------
 // The ⋯ sheet: undo and redo, the project's actions, settings, profile and theme.
-function moreItem(act, label, hint, opts) {
-  opts = opts || {};
-  return '<button type="button" class="m-sheet-item' + (opts.danger ? ' danger' : '') + '" data-more="' + act + '"' + (opts.disabled ? ' disabled' : '') + '>' +
-    '<span>' + label + (hint ? '<em>' + hint + '</em>' : '') + '</span></button>';
+// A row in the ⋯ sheet: an icon on a soft tile, the label (with a hint under it), and at the end
+// a chevron when it opens something, or a switch.
+var ICON = {
+  copy: '<rect width="14" height="14" x="8" y="8" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>',
+  template: '<rect width="18" height="7" x="3" y="3" rx="1"></rect><rect width="9" height="7" x="3" y="14" rx="1"></rect><rect width="5" height="7" x="16" y="14" rx="1"></rect>',
+  reset: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path>',
+  chevron: '<path d="m9 18 6-6-6-6"></path>',
+  close: '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>'
+};
+
+function svg(paths) {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths + '</svg>';
+}
+
+function moreRow(act, icon, label, hint, end, attrs) {
+  return '<button type="button" class="m-row" data-more="' + act + '"' + (attrs || '') + '>' + icon +
+    '<span class="m-row-text"><b>' + label + '</b>' + (hint ? '<em>' + esc(hint) + '</em>' : '') + '</span>' +
+    (end === 'chevron' ? '<span class="m-row-end">' + svg(ICON.chevron) + '</span>' : end || '') + '</button>';
 }
 
 function renderMore() {
   var dark = root.getAttribute('data-theme') === 'dark';
+  var tile = function (paths) { return '<i class="m-ico">' + svg(paths) + '</i>'; };
+  var gear = document.querySelector('.rail [data-page-btn="settings"] svg').innerHTML;
+  var moon = toggle.querySelector('.icon-moon').innerHTML;
+  var logo = '<i class="m-ico logo-tile"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M22.3 10.7A7.5 7.5 0 1 0 22.3 21.3" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></i>';
+  var face = '<i class="m-ico m-face" style="background: ' + safeColor(me.color, AVATAR_COLORS[0]) + '">' + esc(initials(me.name || '?')) + '</i>';
   moreSheet.innerHTML = '<div class="m-handle" aria-hidden="true"></div>' +
+    '<div class="m-sheet-top"><div class="details-title"><span class="details-kind">Cronelo</span><h3>' + esc(project().name) + '</h3></div>' +
+    '<button type="button" class="close-btn" aria-label="Close" data-more="close">' + svg(ICON.close) + '</button></div>' +
     '<div class="m-sheet-row">' +
     '<button type="button" class="btn" data-more="undo"' + (undoBtn.disabled ? ' disabled' : '') + '>' + undoBtn.innerHTML + 'Undo</button>' +
     '<button type="button" class="btn" data-more="redo"' + (redoBtn.disabled ? ' disabled' : '') + '>' + redoBtn.innerHTML + 'Redo</button></div>' +
-    '<div class="m-sheet-head">Project</div>' +
-    moreItem('settings', 'Project settings', 'Defaults, people, tags and more') +
-    moreItem('duplicate', 'Duplicate project', 'A copy to work on separately') +
-    moreItem('template', 'Save as template…', 'Start new projects from this one') +
-    moreItem('reset', 'Reset project…', 'Remove every item', { danger: true }) +
-    '<div class="m-sheet-head">You</div>' +
-    moreItem('profile', 'Your profile', 'Name, colour, account and sign out') +
-    moreItem('theme', dark ? 'Light mode' : 'Dark mode') +
-    moreItem('home', 'All your projects', 'Back to Cronelo');
+    '<div class="m-sheet-head">Project</div><div class="m-card">' +
+    moreRow('settings', tile(gear), 'Project settings', 'Defaults, people, tags and more', 'chevron') +
+    moreRow('duplicate', tile(ICON.copy), 'Duplicate project', 'A copy to work on separately') +
+    moreRow('template', tile(ICON.template), 'Save as template…', 'Start new projects from this one') +
+    '</div><div class="m-sheet-head">You</div><div class="m-card">' +
+    moreRow('profile', face, esc(me.name || 'Your profile'), me.email || 'Name, colour and account', 'chevron') +
+    moreRow('theme', tile(moon), 'Dark mode', '', '<span class="m-switch" aria-hidden="true"></span>', ' role="switch" aria-checked="' + dark + '"') +
+    moreRow('home', logo, 'All your projects', 'Back to Cronelo', 'chevron') +
+    '</div><div class="m-card danger">' +
+    moreRow('reset', tile(ICON.reset), 'Reset project…', 'Remove every item') +
+    '</div>';
 }
 
 function openMore(open) {
@@ -683,13 +706,16 @@ moreSheet.addEventListener('click', function (e) {
     stepHistory(act === 'undo');
     return renderMore(); // stays open for another step
   }
+  if (act === 'theme') { // the switch flips where it is; the sheet stays open
+    toggle.click();
+    return renderMore();
+  }
   openMore(false);
   if (act === 'settings') setPage('settings');
   else if (act === 'duplicate') duplicateProject();
   else if (act === 'template') openTemplateDialog();
   else if (act === 'reset') openResetDialog();
   else if (act === 'profile') openProfile(true);
-  else if (act === 'theme') toggle.click();
   else if (act === 'home') goHome();
 });
 document.addEventListener('keydown', function (e) {
