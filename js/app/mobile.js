@@ -16,7 +16,7 @@ function isMobile() {
 }
 
 var agendaEl = document.querySelector('[data-agenda]');
-var peopleEl = document.querySelector('[data-people-m]');
+var peopleMEl = document.querySelector('[data-people-m]');
 var calDayList = document.querySelector('[data-cal-daylist]');
 var boardJump = document.querySelector('[data-board-jump]');
 var boardScroll = boardEl.querySelector('.board-scroll');
@@ -260,10 +260,10 @@ function renderPeopleM() {
       '<i class="workload-dot ' + state + '" title="' + tip + '"></i>' + (mine.length ? '<span class="pm-chev">' + ICON_CHEVRON + '</span>' : '') + '</button>' +
       (mine.length ? '<div class="pm-strip">' + strip + '</div>' : '') + list + '</section>';
   }).join('');
-  peopleEl.innerHTML = html;
+  peopleMEl.innerHTML = html;
 }
 
-peopleEl.addEventListener('click', function (e) {
+peopleMEl.addEventListener('click', function (e) {
   if (popupJustClosed) {
     popupJustClosed = false;
     return;
@@ -275,7 +275,7 @@ peopleEl.addEventListener('click', function (e) {
     else peopleOpen[id] = true;
     sessionStore.set('cronelo.mPeopleOpen', JSON.stringify(peopleOpen));
     renderPeopleM();
-    var again = peopleEl.querySelector('[data-pm="' + CSS.escape(id) + '"]');
+    var again = peopleMEl.querySelector('[data-pm="' + CSS.escape(id) + '"]');
     if (again) again.focus();
     return;
   }
