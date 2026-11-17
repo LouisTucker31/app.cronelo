@@ -10469,6 +10469,16 @@ button.pill {
     font-size: 14px;
   }
 
+  /* Scrolling inside a sheet stops at its ends rather than carrying on into the page behind
+     (js/app/mobile.js handles pulling a sheet down) */
+  .details,
+  .m-sheet,
+  .dialog,
+  .dialog-body,
+  .menu-wrap .dropdown.check-menu {
+    overscroll-behavior: contain;
+  }
+
   /* Counts like "4 phases" wrap as a whole, never between the number and its word */
   .nw {
     white-space: nowrap;

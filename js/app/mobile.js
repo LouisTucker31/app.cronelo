@@ -561,28 +561,76 @@ window.addEventListener('click', function (e) {
 }, true);
 
 // ---------------------------------------------------------------------------------------------
-// The details sheet: swipe it down to close.
-(function () {
-  var start = null;
-  peek.addEventListener('touchstart', function (e) {
-    if (!isMobile() || peek.scrollTop > 0 || e.touches.length !== 1) return;
-    start = { y: e.touches[0].clientY, dy: 0 };
+// Sheets from the bottom (an item's details, the ⋯ and Fields sheet, the board's Show menu, the
+// task form and the small dialogs): pull one down to close it. A finger on a sheet only ever
+// moves the sheet or scrolls its own content, never the page behind it. Pulled down from the top
+// of its content, the sheet follows the finger and closes past CLOSE_PX (or on a quick flick);
+// short of that it springs back. Content scrolled down scrolls back up first.
+var CLOSE_PX = 90;
+
+// The scrolling box under the finger, within the sheet (the sheet itself, or a part of it).
+function scrollerIn(sheet, el) {
+  for (; el && el !== sheet.parentNode; el = el.parentNode) {
+    if (el.nodeType !== 1) continue;
+    var oy = getComputedStyle(el).overflowY;
+    if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight + 1) return el;
+    if (el === sheet) break;
+  }
+  return null;
+}
+
+function swipeToClose(sheet, close) {
+  var g = null; // the gesture
+  sheet.addEventListener('touchstart', function (e) {
+    if (!isMobile() || e.touches.length !== 1 || sheet.hidden) return;
+    var t = e.touches[0];
+    g = { x: t.clientX, y: t.clientY, t: e.timeStamp, box: scrollerIn(sheet, e.target), mode: null, dy: 0 };
   }, { passive: true });
-  peek.addEventListener('touchmove', function (e) {
-    if (!start) return;
-    start.dy = Math.max(0, e.touches[0].clientY - start.y);
-    peek.style.transform = start.dy ? 'translateY(' + start.dy + 'px)' : '';
-    peek.style.transition = 'none';
-  }, { passive: true });
-  peek.addEventListener('touchend', function () {
-    if (!start) return;
-    var far = start.dy > 90;
-    start = null;
-    peek.style.transition = '';
-    peek.style.transform = '';
-    if (far) closePeek();
-  });
-})();
+  sheet.addEventListener('touchmove', function (e) {
+    if (!g) return;
+    var t = e.touches[0];
+    var dx = t.clientX - g.x;
+    var dy = t.clientY - g.y;
+    if (!g.mode) {
+      if (Math.abs(dx) + Math.abs(dy) < 6) return;
+      // Sideways (a slider, a row of chips) is left alone; down from the top drags the sheet;
+      // anything else scrolls the sheet's own content, if it has any to scroll.
+      g.mode = Math.abs(dx) > Math.abs(dy) ? 'side' : dy > 0 && (!g.box || g.box.scrollTop <= 0) ? 'drag' : g.box ? 'scroll' : 'hold';
+    }
+    if (g.mode === 'side' || g.mode === 'scroll') return;
+    e.preventDefault(); // the page behind stays put
+    if (g.mode !== 'drag') return;
+    g.dy = Math.max(0, dy);
+    sheet.style.transition = 'none';
+    sheet.style.transform = 'translateY(' + g.dy + 'px)';
+  }, { passive: false });
+  function end(e) {
+    if (!g) return;
+    var done = g.mode === 'drag' && (g.dy > CLOSE_PX || (g.dy > 30 && e.timeStamp - g.t < 250));
+    var dragged = g.mode === 'drag';
+    g = null;
+    if (!dragged) return;
+    sheet.style.transition = 'transform .2s ease';
+    if (!done) {
+      sheet.style.transform = '';
+      return;
+    }
+    sheet.style.transform = 'translateY(100%)'; // slide away, then close
+    setTimeout(function () {
+      close();
+      sheet.style.transition = '';
+      sheet.style.transform = '';
+    }, 180);
+  }
+  sheet.addEventListener('touchend', end);
+  sheet.addEventListener('touchcancel', end);
+}
+
+swipeToClose(peek, closePeek);
+swipeToClose(moreSheet, function () { openMore(false); });
+swipeToClose(showMenu, function () { showShowMenu(false); });
+swipeToClose(dialog, function () { dialog.close(); });
+swipeToClose(actDialog, function () { actDialog.close(); });
 
 // ---------------------------------------------------------------------------------------------
 // The ⋯ sheet: undo and redo, the project's actions, settings, profile and theme.
