@@ -639,7 +639,7 @@ function renderPlan() {
       html += '<div class="phase-line" style="' + span + 'top: ' + (b.cy + 6) + 'px' + colorVar(row) + '"></div>' +
         '<div class="phase-cap' + state + '"' + tip + ' style="left: ' + b.x1 + 'px; top: ' + (b.cy + 2) + 'px' + colorVar(row) + '"></div>' +
         (row.end != null ? '<div class="phase-cap' + state + '"' + tip + ' style="left: ' + b.x2 + 'px; top: ' + (b.cy + 2) + 'px' + colorVar(row) + '"></div>' : '') +
-        '<div class="phase' + state + '"' + tip + ' style="left: ' + (b.x1 + 4) + 'px; top: ' + (b.cy - 13) + 'px' + colorVar(row) + '">' + esc(row.name) + foldBtn(row) +
+        '<div class="phase' + state + '"' + tip + ' style="left: ' + (b.x1 + 7) + 'px; top: ' + (b.cy - 13) + 'px' + colorVar(row) + '">' + esc(row.name) + foldBtn(row) +
         (foldCount[row.id] ? '<span class="phase-hidden">' + itemsWord(foldCount[row.id]) + ' hidden</span>' : '') + '</div>';
       // A tinted band behind the whole section, over the phase's time: up to its end, or
       // for an open-ended phase up to the next phase's start (or the end of the timeline).
