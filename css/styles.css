@@ -9408,9 +9408,58 @@ button.pill {
     font-size: 0;
   }
 
+  /* Only the column in view names itself; the others are its dot and count, so the chips fit */
+  .chip-jump:not(.on) span {
+    display: none;
+  }
+
+  /* While it's open, its page sits above the tab bar and the + button */
+  .board:has(.check-menu:not([hidden])),
+  .list:has(.check-menu:not([hidden])) {
+    z-index: 45;
+  }
+
+  /* The board's Show menu: a sheet from the bottom, like Fields */
   .menu-wrap .dropdown.check-menu {
-    max-height: 60dvh;
+    position: fixed;
+    z-index: 40;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    min-width: 0;
+    max-height: 75dvh;
     overflow-y: auto;
+    padding: 8px 12px calc(12px + env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 14px 14px 0 0;
+    transform: none;
+    box-shadow: 0 0 0 100vmax rgba(18, 20, 23, .32), 0 -8px 32px var(--shadow-strong);
+    animation: m-sheet-in .22s ease-out;
+  }
+
+  [data-theme="dark"] .menu-wrap .dropdown.check-menu {
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .55), 0 -8px 32px var(--shadow-strong);
+  }
+
+  .menu-wrap .check-menu .dropdown-head {
+    padding: 14px 8px 4px;
+    font-size: 11px;
+  }
+
+  .menu-wrap .check-menu button {
+    min-height: 48px;
+    gap: 12px;
+    padding: 0 8px;
+    font-size: 15px;
+  }
+
+  .menu-wrap .check-menu button[role="menuitemcheckbox"]::before {
+    order: 1;
+    width: 20px;
+    height: 20px;
+    margin-left: auto;
+    border-radius: 5px;
   }
 
   .board-jump {
@@ -9425,10 +9474,10 @@ button.pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    height: 30px;
-    padding: 0 11px;
+    height: 32px;
+    padding: 0 10px;
     border: 1px solid var(--line-5);
-    border-radius: 15px;
+    border-radius: 7px;
     background: var(--raised);
     color: var(--text-6);
     font: 500 12.5px Inter, system-ui, sans-serif;
