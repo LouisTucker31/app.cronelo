@@ -129,7 +129,23 @@ scroller.addEventListener('pointermove', function (e) {
   ghost.firstChild.textContent = '+ ' + (scale.unit === 'hour' ? clockOf(spot.time) : dayLabel((spot.time - PLAN_START) / DAY)) +
     (spot.phase ? ' · ' + data.rows[rowIndex[spot.phase]].name : personById(spot.person) ? ' · ' + personById(spot.person).name : '');
 });
-scroller.addEventListener('pointerleave', function () { ghost.hidden = true; });
+scroller.addEventListener('pointerleave', function () { ghost.hidden = true; hotPhase(null); });
+
+// The phase label's chevron shows only while the pointer is over that phase's row.
+var hotId = null;
+function hotPhase(id) {
+  if (id === hotId) return;
+  hotId = id;
+  Array.prototype.forEach.call(chartBody.querySelectorAll('.phase.hot'), function (el) { el.classList.remove('hot'); });
+  if (id) Array.prototype.forEach.call(chartBody.querySelectorAll('.phase[data-id="' + CSS.escape(id) + '"]'), function (el) { el.classList.add('hot'); });
+}
+
+scroller.addEventListener('pointermove', function (e) {
+  if (workload || e.pointerType !== 'mouse') return hotPhase(null);
+  var y = e.clientY - chartBody.getBoundingClientRect().top;
+  var row = data.rows[lineRows[Math.floor((y - ROW_Y) / ROW_PX + 0.5)]];
+  hotPhase(row && row.type === 'phase' ? row.id : null);
+});
 
 // Drag rows up and down the task list to reorder the plan (Alt+↑/↓ from the keyboard).
 // A row moves as a block: a task with its subtasks, a phase with everything in its
