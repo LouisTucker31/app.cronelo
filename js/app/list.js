@@ -483,8 +483,8 @@ function dragScroll(box, skip, yTarget) {
     var now = (e && e.timeStamp) || performance.now();
     if (!(dt > 0 && now - b.t < 80)) return; // only glide if still moving when let go
     var cap = function (v) { return Math.max(-6, Math.min(6, v)); };
-    var vx = cap((b.x - a.x) / dt);
-    var vy = cap((b.y - a.y) / dt);
+    var vx = d0.axis === 'y' ? 0 : cap((b.x - a.x) / dt); // in the drag's direction
+    var vy = d0.axis === 'x' ? 0 : cap((b.y - a.y) / dt);
     var last = performance.now();
     function step(t) {
       var d = Math.min(t - last, 32);
@@ -506,20 +506,21 @@ function dragScroll(box, skip, yTarget) {
     var r = box.getBoundingClientRect();
     if (e.clientX - r.left >= box.clientWidth || e.clientY - r.top >= box.clientHeight) return; // the scrollbars
     var ys = (yTarget && yTarget(e.target)) || box;
-    drag = { x: e.clientX, y: e.clientY, left: box.scrollLeft, top: ys.scrollTop, ys: ys, id: e.pointerId, trail: [] };
+    drag = { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, left: box.scrollLeft, top: ys.scrollTop, ys: ys, id: e.pointerId, trail: [] };
     e.preventDefault(); // no text selection
   });
   box.addEventListener('pointermove', function (e) {
     if (!drag) return;
     if (!e.buttons) return end(e); // released outside the window
-    if (!dragged && Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 4) {
+    if (!dragged && Math.abs(e.clientX - drag.x0) + Math.abs(e.clientY - drag.y0) > 4) {
       dragged = true;
       try { box.setPointerCapture(drag.id); } catch (err) { /* the pointer has already gone */ }
       box.classList.add('dragging');
     }
     if (!dragged) return;
-    box.scrollLeft = drag.left - (e.clientX - drag.x);
-    drag.ys.scrollTop = drag.top - (e.clientY - drag.y);
+    var m = lockedDelta(drag, e.clientX - drag.x, e.clientY - drag.y); // keeps to the direction it set off in
+    box.scrollLeft = drag.left - m.dx;
+    drag.ys.scrollTop = drag.top - m.dy;
     var now = e.timeStamp || performance.now();
     drag.trail.push({ t: now, x: e.clientX, y: e.clientY });
     while (drag.trail.length > 2 && now - drag.trail[0].t > 100) drag.trail.shift();

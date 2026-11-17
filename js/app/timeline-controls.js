@@ -74,8 +74,9 @@ function syncTodayArrow() {
   todayBtn.title = here ? 'You’re viewing ' + word.toLowerCase() : 'Back to ' + word.toLowerCase();
 }
 
-// Drag to pan: hold the left mouse button and drag to move the chart freely in any
-// direction, diagonals included. Let go mid-drag and it keeps gliding, slowing to a stop
+// Drag to pan: hold the left mouse button and drag to move the chart, keeping to the direction
+// the drag set off in unless it's clearly diagonal (lockedDelta, below). Let go mid-drag and it
+// keeps gliding, slowing to a stop
 // like a map. Touch screens already pan (and fling) natively. Buttons such as Today still
 // click, and grabbing the scrollbar still works normally.
 var FRICTION = 0.995;  // glide speed kept per millisecond
@@ -86,6 +87,37 @@ var glide = 0;         // requestAnimationFrame id while gliding
 function stopGlide() {
   if (glide) cancelAnimationFrame(glide);
   glide = 0;
+}
+
+// A drag keeps to the direction it set off in: mostly sideways stays level, mostly up or down
+// stays upright, and only a clearly diagonal start moves freely. Pulling well off a locked
+// direction (AXIS_FREE px) frees it, carrying on smoothly from there. The first few pixels
+// decide, and move nothing. `d` is the drag (its press point x/y); dx/dy how far it has gone.
+// Returns how far to move the view, and sets d.axis ('x', 'y' or 'free').
+var AXIS_DECIDE = 8;
+var AXIS_FREE = 48;
+
+function lockedDelta(d, dx, dy) {
+  var ax = Math.abs(dx);
+  var ay = Math.abs(dy);
+  if (!d.axis) {
+    if (ax + ay < AXIS_DECIDE) return { dx: 0, dy: 0 };
+    d.axis = ax > ay * 2 ? 'x' : ay > ax * 2 ? 'y' : 'free';
+    d.x += d.axis === 'y' ? dx : 0; // start the locked-out direction from here, not the press
+    d.y += d.axis === 'x' ? dy : 0;
+    if (d.axis === 'x') dy = 0;
+    if (d.axis === 'y') dx = 0;
+  }
+  if (d.axis === 'x' && Math.abs(dy) > AXIS_FREE) {
+    d.axis = 'free';
+    d.y += dy; // carry on from here: no jump by what was held back
+    dy = 0;
+  } else if (d.axis === 'y' && Math.abs(dx) > AXIS_FREE) {
+    d.axis = 'free';
+    d.x += dx;
+    dx = 0;
+  }
+  return { dx: d.axis === 'y' ? 0 : dx, dy: d.axis === 'x' ? 0 : dy };
 }
 
 // vx/vy are in px per ms, in the direction the content was moving.
@@ -110,7 +142,7 @@ scroller.addEventListener('pointerdown', function (e) {
   if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('button')) return;
   var r = scroller.getBoundingClientRect();
   if (e.clientX - r.left >= scroller.clientWidth || e.clientY - r.top >= scroller.clientHeight) return;
-  drag = { x: e.clientX, y: e.clientY, left: scroller.scrollLeft, top: scroller.scrollTop, trail: [] };
+  drag = { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, left: scroller.scrollLeft, top: scroller.scrollTop, trail: [] };
   try { scroller.setPointerCapture(e.pointerId); } catch (err) { /* the pointer has already gone */ }
   scroller.classList.add('dragging');
   e.preventDefault(); // don't start a text selection
@@ -125,9 +157,11 @@ scroller.addEventListener('pointerdown', function (e) {
 scroller.addEventListener('pointermove', function (e) {
   if (move) return moveItemTo(e.clientX);
   if (!drag) return;
-  scroller.scrollLeft = drag.left - (e.clientX - drag.x);
-  scroller.scrollTop = drag.top - (e.clientY - drag.y);
-  if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 4) {
+  var moved = Math.abs(e.clientX - drag.x0) + Math.abs(e.clientY - drag.y0);
+  var m = lockedDelta(drag, e.clientX - drag.x, e.clientY - drag.y);
+  scroller.scrollLeft = drag.left - m.dx;
+  scroller.scrollTop = drag.top - m.dy;
+  if (moved > 4) {
     dragMoved = true;
     cancelHold();
   }
@@ -142,6 +176,7 @@ function endDrag(e) {
   if (move) return drop(false);
   if (!drag) return;
   var trail = drag.trail;
+  var axis = drag.axis;
   drag = null;
   scroller.classList.remove('dragging');
   if (trail.length < 2) return;
@@ -149,9 +184,11 @@ function endDrag(e) {
   var b = trail[trail.length - 1];
   var now = (e && e.timeStamp) || performance.now();
   var dt = b.t - a.t;
-  // Only glide if the mouse was still moving when it was released.
+  // Only glide if the mouse was still moving when it was released, and in the drag's direction.
   var cap = function (v) { return Math.max(-6, Math.min(6, v)); }; // px per ms
-  if (dt > 0 && now - b.t < 80) startGlide(cap((b.x - a.x) / dt), cap((b.y - a.y) / dt));
+  if (dt > 0 && now - b.t < 80) {
+    startGlide(axis === 'y' ? 0 : cap((b.x - a.x) / dt), axis === 'x' ? 0 : cap((b.y - a.y) / dt));
+  }
 }
 
 scroller.addEventListener('pointerup', endDrag);
